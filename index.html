@@ -3,6 +3,7 @@
 <head>
 <title>DatabaseAI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body {
   margin: 0;
@@ -29,7 +30,7 @@ h1 {
 }
 
 .button {
-  margin-top: 25px;
+  margin-top: 20px;
   padding: 15px 25px;
   border-radius: 30px;
   border: none;
@@ -40,7 +41,7 @@ h1 {
 }
 
 .section {
-  margin-top: 60px;
+  margin-top: 50px;
 }
 
 .card {
@@ -57,29 +58,15 @@ h1 {
   margin-bottom: 8px;
 }
 
-.preview {
-  margin-top: 20px;
-  background: #111;
-  padding: 20px;
-  border-radius: 20px;
-  text-align: center;
-  border: 1px solid #222;
-}
-
-.preview img {
-  width: 100%;
-  border-radius: 15px;
-}
-
-.footer {
-  margin-top: 60px;
-  color: #666;
-  font-size: 12px;
+#chat {
+  display: flex;
+  flex-direction: column;
 }
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
 <h1>DatabaseAI</h1>
@@ -90,16 +77,20 @@ Search. Analyze. Command. Store.<br>
 No switching. No limits.
 </p>
 
-<a href="https://database-backend-rnw0.onrender.com">
-  <button class="button">Enter Command Layer</button>
-</a>
+<button class="button" onclick="openAI()">Enter Command Layer</button>
 
-<!-- APP PREVIEW -->
-<div class="section">
-<div class="preview">
-  <p style="color: gold; font-weight: bold;">Live System Preview</p>
-  <p>AI Base • Discover • Decode • Vault</p>
-</div>
+<!-- AI CHAT -->
+<div id="aiBox" style="display:none; margin-top:30px;">
+
+  <div id="chat" style="max-height:400px; overflow-y:auto;"></div>
+
+  <textarea id="input" placeholder="Enter command..."
+  style="width:100%; padding:15px; border-radius:10px; background:#111; color:white; border:1px solid #333; margin-top:10px;"></textarea>
+
+  <button onclick="send()" class="button">Execute</button>
+
+  <button onclick="upgrade()" class="button">Unlock Premium</button>
+
 </div>
 
 <!-- FEATURES -->
@@ -132,22 +123,85 @@ No switching. No limits.
 
 <div class="card">
   <div class="title">Premium Barrier</div>
-  <p>Unlock elite speed and higher intelligence.</p>
+  <p>Unlock elite speed and intelligence.</p>
 </div>
 
 </div>
 
-<!-- FINAL CTA -->
-<div class="section">
-<a href="https://database-backend-rnw0.onrender.com">
-  <button class="button">Launch System</button>
-</a>
 </div>
 
-<div class="footer">
-DatabaseAI © Future Intelligence System
-</div>
+<!-- SCRIPT -->
+<script>
 
-</div>
+let messageCount = 0;
+const LIMIT = 5;
+
+function openAI() {
+  document.getElementById("aiBox").style.display = "block";
+}
+
+function addMessage(text, type) {
+  const chat = document.getElementById("chat");
+
+  const bubble = document.createElement("div");
+  bubble.style.padding = "10px";
+  bubble.style.marginTop = "10px";
+  bubble.style.borderRadius = "10px";
+  bubble.style.maxWidth = "80%";
+
+  if (type === "user") {
+    bubble.style.background = "#222";
+    bubble.style.alignSelf = "flex-end";
+  } else {
+    bubble.style.background = "#111";
+    bubble.style.border = "1px solid #333";
+  }
+
+  bubble.innerText = text;
+  chat.appendChild(bubble);
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function send() {
+  const input = document.getElementById("input");
+  const text = input.value;
+
+  if (!text) return;
+
+  if (messageCount >= LIMIT) {
+    alert("Free limit reached. Upgrade to Premium.");
+    return;
+  }
+
+  addMessage(text, "user");
+  input.value = "";
+
+  messageCount++;
+
+  try {
+    const res = await fetch("https://database-backend-rnw0.onrender.com/ask", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: text })
+    });
+
+    const data = await res.json();
+
+    addMessage(data.reply || "No response", "ai");
+
+  } catch (err) {
+    addMessage("Server error. Try again.", "ai");
+  }
+}
+
+function upgrade() {
+  alert("Premium system coming next.");
+}
+
+</script>
+
 </body>
-</html>
+    </html>
