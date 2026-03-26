@@ -2,42 +2,218 @@
 <html>
 <head>
 <title>DatabaseAI</title>
+
 <style>
-body { background:#000;color:#fff;font-family:sans-serif }
-.screen { display:none;padding:20px }
-.active { display:block }
-button { margin:5px;padding:10px }
+body {
+  margin:0;
+  font-family: Arial;
+  background: linear-gradient(135deg,#000,#0a0a0a);
+  color:white;
+}
+
+/* HEADER */
+.header {
+  text-align:center;
+  padding:20px;
+  font-size:28px;
+  font-weight:bold;
+  background: linear-gradient(90deg,gold,#ffcc00);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* NAV */
+.nav {
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+  padding:10px;
+  justify-content:center;
+}
+
+.nav button {
+  padding:10px 15px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:white;
+  cursor:pointer;
+}
+
+/* SCREEN */
+.screen {
+  display:none;
+  max-width:500px;
+  margin:auto;
+  padding:15px;
+}
+
+.active {
+  display:block;
+}
+
+/* TITLE */
+.title {
+  text-align:center;
+  margin-bottom:15px;
+}
+
+/* INPUT */
+input {
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:white;
+}
+
+/* BUTTON */
+.main-btn {
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background: linear-gradient(90deg,gold,#ffcc00);
+  color:black;
+  font-weight:bold;
+}
+
+/* CHAT */
+.chat-box {
+  height:300px;
+  overflow-y:auto;
+  margin-bottom:10px;
+}
+
+.msg {
+  padding:10px;
+  margin:5px 0;
+  border-radius:10px;
+}
+
+.user {
+  background:#222;
+}
+
+.ai {
+  background:linear-gradient(90deg,#222,#333);
+}
+
+/* CARDS */
+.card {
+  background:#111;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:10px;
+  border:1px solid #222;
+}
+
+.card button {
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#222;
+  color:white;
+}
+
+.premium {
+  border:1px solid gold;
+}
 </style>
 </head>
 
 <body>
 
-<h2>DatabaseAI</h2>
+<div class="header">DatabaseAI</div>
 
-<button onclick="show('auth')">Auth</button>
-<button onclick="show('ai')">AI</button>
-<button onclick="show('vault')">Vault</button>
-<button onclick="show('premium')">Premium</button>
+<div class="nav">
+  <button onclick="show('auth')">Access</button>
+  <button onclick="show('ai')">AI</button>
+  <button onclick="show('discover')">Discover</button>
+  <button onclick="show('decode')">Decode</button>
+  <button onclick="show('vault')">Vault</button>
+  <button onclick="show('premium')">Premium</button>
+</div>
 
+<!-- AUTH -->
 <div id="auth" class="screen active">
-  <input id="email" placeholder="Email"><br>
-  <input id="pass" placeholder="Password"><br>
-  <button onclick="signup()">Signup</button>
-  <button onclick="login()">Login</button>
+  <h2 class="title">Access DatabaseAI</h2>
+
+  <input id="email" placeholder="Email">
+  <input id="pass" placeholder="Password" type="password">
+
+  <button class="main-btn" onclick="signup()">Create Account</button>
+  <button class="main-btn" onclick="login()">Enter System</button>
 </div>
 
+<!-- AI -->
 <div id="ai" class="screen">
-  <div id="chat"></div>
-  <input id="msg"><button onclick="send()">Send</button>
+  <h2 class="title">AI Core</h2>
+
+  <div id="chat" class="chat-box"></div>
+
+  <input id="msg" placeholder="Enter command...">
+  <button class="main-btn" onclick="send()">Execute</button>
 </div>
 
+<!-- DISCOVER -->
+<div id="discover" class="screen">
+  <h2 class="title">Discover Intelligence</h2>
+
+  <div class="card">
+    <p>💡 Business Ideas</p>
+    <button onclick="quickAsk('Give me a powerful business idea')">Explore</button>
+  </div>
+
+  <div class="card">
+    <p>📈 Growth Strategy</p>
+    <button onclick="quickAsk('How to grow a startup fast')">Explore</button>
+  </div>
+
+  <div class="card">
+    <p>🧠 Elite Mindset</p>
+    <button onclick="quickAsk('How to think like a billionaire')">Explore</button>
+  </div>
+</div>
+
+<!-- DECODE -->
+<div id="decode" class="screen">
+  <h2 class="title">Decode Intelligence</h2>
+
+  <input type="file" id="fileInput">
+
+  <button class="main-btn" onclick="uploadFile()">Analyze File</button>
+
+  <div id="fileResult"></div>
+</div>
+
+<!-- VAULT -->
 <div id="vault" class="screen">
-  <button onclick="loadVault()">Load Vault</button>
+  <h2 class="title">Vault</h2>
+
+  <button class="main-btn" onclick="loadVault()">Load Intelligence</button>
+
   <div id="vaultData"></div>
 </div>
 
+<!-- PREMIUM -->
 <div id="premium" class="screen">
-  <input id="ref"><button onclick="pay()">Submit Payment</button>
+  <h2 class="title">Premium Access</h2>
+
+  <div class="card premium">
+    <p>✔ Unlimited AI</p>
+    <p>✔ File Intelligence</p>
+    <p>✔ Memory Vault</p>
+  </div>
+
+  <input id="ref" placeholder="Payment Reference">
+
+  <button class="main-btn" onclick="pay()">Unlock Premium</button>
 </div>
 
 <script>
@@ -48,37 +224,111 @@ function show(id){
   document.getElementById(id).classList.add("active");
 }
 
+/* AUTH */
 async function signup(){
-  await fetch("/auth/signup",{method:"POST",headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({email:email.value,password:pass.value})});
+  await fetch("/auth/signup",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:email.value,password:pass.value})
+  });
+  alert("Account created");
 }
 
 async function login(){
-  const r=await fetch("/auth/login",{method:"POST",headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({email:email.value,password:pass.value})});
+  const r=await fetch("/auth/login",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:email.value,password:pass.value})
+  });
   const d=await r.json();
   token=d.token;
+  alert("Logged in");
   show('ai');
 }
 
+/* AI CHAT WITH TYPING EFFECT */
 async function send(){
-  const r=await fetch("/api/chat",{method:"POST",
-  headers:{'Content-Type':'application/json','Authorization':token},
-  body:JSON.stringify({message:msg.value})});
+  const text=msg.value;
+
+  chat.innerHTML += `<div class="msg user">${text}</div>`;
+
+  const r=await fetch("/api/chat",{
+    method:"POST",
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':token
+    },
+    body:JSON.stringify({message:text})
+  });
+
   const d=await r.json();
-  chat.innerHTML += "<p>"+d.reply+"</p>";
+
+  let i=0;
+  let output="";
+  const box=document.createElement("div");
+  box.className="msg ai";
+  chat.appendChild(box);
+
+  const interval=setInterval(()=>{
+    output+=d.reply[i];
+    box.innerHTML=output;
+    i++;
+    if(i>=d.reply.length) clearInterval(interval);
+  },15);
+
+  msg.value="";
 }
 
+/* DISCOVER */
+function quickAsk(text){
+  show('ai');
+  msg.value=text;
+  send();
+}
+
+/* FILE UPLOAD */
+async function uploadFile(){
+  const file=document.getElementById("fileInput").files[0];
+
+  const formData=new FormData();
+  formData.append("file",file);
+
+  const res=await fetch("/upload",{
+    method:"POST",
+    headers:{Authorization:token},
+    body:formData
+  });
+
+  const data=await res.json();
+
+  document.getElementById("fileResult").innerHTML=data.analysis;
+}
+
+/* VAULT */
 async function loadVault(){
   const r=await fetch("/vault",{headers:{Authorization:token}});
   const d=await r.json();
-  vaultData.innerHTML=JSON.stringify(d);
+
+  vaultData.innerHTML=d.map(v=>`
+    <div class="card">
+      <b style="color:gold">${v.title}</b>
+      <p>${v.content}</p>
+    </div>
+  `).join("");
 }
 
+/* PAYMENT */
 async function pay(){
-  await fetch("/submit-payment",{method:"POST",
-  headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({userId:"ID",reference:ref.value})});
+  await fetch("/submit-payment",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      userId:"TEMP",
+      reference:ref.value
+    })
+  });
+
+  alert("Payment submitted");
 }
 </script>
 
