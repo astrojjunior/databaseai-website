@@ -11,7 +11,7 @@ body{
   font-family:Arial, sans-serif;
   background:#000;
   color:#ffd700;
-  overflow-x:hidden;
+  overflow:hidden;
 }
 
 /* GRID BACKGROUND */
@@ -27,43 +27,76 @@ body::after{
   z-index:-1;
 }
 
-/* TITLE */
+/* HEADER */
 .header{
   text-align:center;
   padding:10px;
   font-weight:bold;
+  letter-spacing:2px;
 }
 
 /* CORE */
 .core{
-  width:120px;
-  height:120px;
-  margin:30px auto;
+  width:140px;
+  height:140px;
+  margin:20px auto;
   border-radius:50%;
   background:radial-gradient(circle,#ffd700,#000);
-  box-shadow:0 0 40px #ffd700;
+  box-shadow:0 0 60px #ffd700;
 }
 
-/* SYSTEM GRID */
+/* GRID */
 .system-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px;
+  gap:15px;
   padding:15px;
+  height:50vh;
 }
 
 .system-card{
-  background: rgba(255,215,0,0.05);
-  border:1px solid rgba(255,215,0,0.4);
-  border-radius:15px;
-  padding:15px;
-  box-shadow:0 0 15px rgba(255,215,0,0.2);
+  background:linear-gradient(145deg,#111,#000);
+  border:1px solid rgba(255,215,0,0.5);
+  border-radius:20px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  box-shadow:0 0 20px rgba(255,215,0,0.2);
   transition:0.3s;
 }
 
 .system-card:hover{
   transform:scale(1.05);
-  box-shadow:0 0 25px rgba(255,215,0,0.6);
+  box-shadow:0 0 40px rgba(255,215,0,0.6);
+}
+
+.system-card h3{
+  margin:0;
+  font-size:15px;
+}
+
+.system-card p{
+  font-size:11px;
+  color:#aaa;
+}
+
+/* COMMAND BAR */
+.command-bar{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  padding:10px;
+  background:#000;
+}
+
+.command-input{
+  width:100%;
+  padding:15px;
+  border-radius:10px;
+  border:none;
+  background:#111;
+  color:#fff;
 }
 
 /* MODE SCREEN */
@@ -85,7 +118,6 @@ body::after{
 .mode-header{
   padding:15px;
   text-align:center;
-  font-weight:bold;
   border-bottom:1px solid rgba(255,215,0,0.3);
 }
 
@@ -95,30 +127,23 @@ body::after{
   padding:15px;
 }
 
-/* INPUT */
 textarea{
   width:100%;
   padding:15px;
-  border:none;
   border-radius:10px;
+  border:none;
   background:#111;
   color:#fff;
 }
 
-/* BUTTON */
 .send-btn{
   width:100%;
   padding:15px;
   margin-top:10px;
-  background:linear-gradient(90deg,#ffd700,#00ffcc);
   border:none;
   border-radius:10px;
+  background:linear-gradient(90deg,#ffd700,#00ffcc);
   font-weight:bold;
-}
-
-/* CHAT */
-.chat-box{
-  margin-top:10px;
 }
 
 .msg{
@@ -127,44 +152,54 @@ textarea{
   border-radius:10px;
 }
 
-.user{
-  background:#222;
-}
-
-.ai{
-  background:rgba(255,215,0,0.1);
-}
+.user{ background:#222; }
+.ai{ background:rgba(255,215,0,0.1); }
 </style>
 </head>
 
 <body>
 
-<div class="header">DatabaseAI</div>
+<div class="header">DATABASE AI</div>
 <div class="core"></div>
 
-<!-- SYSTEM GRID -->
+<!-- FULL CONTROL GRID -->
 <div class="system-grid">
 
   <div class="system-card" onclick="openMode('business')">
-    💼 Business Engine
+    <h3>BUSINESS ENGINE</h3>
+    <p>Strategy • Growth • Monetization</p>
   </div>
 
   <div class="system-card" onclick="openMode('mind')">
-    🧠 Mind System
+    <h3>MIND SYSTEM</h3>
+    <p>Clarity • Emotional Intelligence</p>
   </div>
 
   <div class="system-card" onclick="openMode('analysis')">
-    📊 Analysis Core
+    <h3>ANALYSIS CORE</h3>
+    <p>Breakdown • Insight • Patterns</p>
   </div>
 
   <div class="system-card" onclick="openMode('vault')">
-    🗂 Vault
+    <h3>MEMORY VAULT</h3>
+    <p>Stored Intelligence</p>
   </div>
 
   <div class="system-card" onclick="openMode('create')">
-    ⚡ Create Engine
+    <h3>CREATE ENGINE</h3>
+    <p>Build Systems</p>
   </div>
 
+  <div class="system-card" onclick="openMode('chat')">
+    <h3>AI COMMAND</h3>
+    <p>Direct Intelligence</p>
+  </div>
+
+</div>
+
+<!-- COMMAND BAR -->
+<div class="command-bar">
+  <input class="command-input" id="quickInput" placeholder="Command the system..." onkeydown="quickSend(event)">
 </div>
 
 <!-- MODE SCREEN -->
@@ -175,99 +210,90 @@ textarea{
 
 <script>
 
-let mode = "chat";
+let mode="chat";
 
 /* OPEN MODE */
 function openMode(type){
-  const screen = document.getElementById("modeScreen");
-  const title = document.getElementById("modeTitle");
-  const content = document.getElementById("modeContent");
+  const screen=document.getElementById("modeScreen");
+  const title=document.getElementById("modeTitle");
+  const content=document.getElementById("modeContent");
 
   screen.classList.add("active");
 
-  if(type==="business"){
-    title.innerText="Business Engine";
+  if(type==="business"||type==="mind"||type==="chat"){
+    title.innerText=type.toUpperCase();
     content.innerHTML=getChatUI();
-    mode="business";
-  }
-
-  if(type==="mind"){
-    title.innerText="Mind System";
-    content.innerHTML=getChatUI();
-    mode="mind";
+    mode=type;
   }
 
   if(type==="analysis"){
-    title.innerText="Analysis Core";
-    content.innerHTML=`
-      <textarea id="input"></textarea>
-      <button class="send-btn" onclick="send()">Analyze</button>
-      <div id="chat" class="chat-box"></div>
-    `;
+    title.innerText="ANALYSIS CORE";
+    content.innerHTML=getChatUI("Analyze...");
     mode="analysis";
   }
 
-  if(type==="vault"){
-    title.innerText="Vault";
-    content.innerHTML=`
-      <button class="send-btn" onclick="clearVault()">Clear Vault</button>
-      <div id="vaultData"></div>
-    `;
-    loadVault();
+  if(type==="create"){
+    title.innerText="CREATE ENGINE";
+    content.innerHTML=getChatUI("Describe what to build...");
+    mode="create";
   }
 
-  if(type==="create"){
-    title.innerText="Create Engine";
-    content.innerHTML=`
-      <textarea id="input" placeholder="Describe what you want to build..."></textarea>
-      <button class="send-btn" onclick="send()">Build</button>
-      <div id="chat" class="chat-box"></div>
-    `;
-    mode="create";
+  if(type==="vault"){
+    title.innerText="MEMORY VAULT";
+    content.innerHTML=`<button class="send-btn" onclick="clearVault()">CLEAR</button><div id="vaultData"></div>`;
+    loadVault();
   }
 }
 
 /* CHAT UI */
-function getChatUI(){
+function getChatUI(placeholder="Ask anything..."){
   return `
-    <textarea id="input" placeholder="Ask anything..."></textarea>
-    <button class="send-btn" onclick="send()">Execute</button>
-    <div id="chat" class="chat-box"></div>
+    <textarea id="input" placeholder="${placeholder}"></textarea>
+    <button class="send-btn" onclick="send()">EXECUTE</button>
+    <div id="chat"></div>
   `;
 }
 
 /* SEND */
 async function send(){
-  const input = document.getElementById("input").value;
-  if(!input) return;
+  const input=document.getElementById("input").value;
+  if(!input)return;
 
-  const chat = document.getElementById("chat");
+  const chat=document.getElementById("chat");
+  chat.innerHTML+=`<div class="msg user">${input}</div>`;
 
-  chat.innerHTML += `<div class="msg user">${input}</div>`;
-
-  const res = await fetch("/api/chat",{
+  const res=await fetch("/api/chat",{
     method:"POST",
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({message:input})
   });
 
-  const data = await res.json();
+  const data=await res.json();
+  chat.innerHTML+=`<div class="msg ai">${data.reply}</div>`;
 
-  chat.innerHTML += `<div class="msg ai">${data.reply}</div>`;
+  saveMemory(input,data.reply);
+}
 
-  saveMemory(input, data.reply);
+/* QUICK COMMAND */
+function quickSend(e){
+  if(e.key==="Enter"){
+    openMode("chat");
+    setTimeout(()=>{
+      document.getElementById("input").value=document.getElementById("quickInput").value;
+      send();
+    },300);
+  }
 }
 
 /* MEMORY */
-function saveMemory(user, ai){
-  let mem = JSON.parse(localStorage.getItem("memory") || "[]");
-  mem.push({user, ai});
-  localStorage.setItem("memory", JSON.stringify(mem));
+function saveMemory(user,ai){
+  let mem=JSON.parse(localStorage.getItem("memory")||"[]");
+  mem.push({user,ai});
+  localStorage.setItem("memory",JSON.stringify(mem));
 }
 
-/* LOAD VAULT */
 function loadVault(){
-  let mem = JSON.parse(localStorage.getItem("memory") || "[]");
+  let mem=JSON.parse(localStorage.getItem("memory")||"[]");
   let html="";
   mem.forEach(m=>{
     html+=`<div class="msg user">${m.user}</div>`;
@@ -276,7 +302,6 @@ function loadVault(){
   document.getElementById("vaultData").innerHTML=html;
 }
 
-/* CLEAR */
 function clearVault(){
   localStorage.removeItem("memory");
   loadVault();
