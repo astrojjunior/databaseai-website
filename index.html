@@ -1,198 +1,180 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DatabaseAI</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-body {
+body{
   margin:0;
-  font-family:'Orbitron', sans-serif;
-  overflow:hidden;
-  color:#ffd700;
+  font-family:Arial, sans-serif;
   background:#000;
+  color:#ffd700;
+  overflow-x:hidden;
 }
 
-/* GRID */
-.grid {
+/* GRID BACKGROUND */
+body::after{
+  content:"";
   position:fixed;
   width:100%;
   height:100%;
   background-image:
     linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
-  background-size:50px 50px;
+  background-size:40px 40px;
+  z-index:-1;
 }
 
-/* HEADER */
-.header {
-  position:absolute;
-  top:10px;
-  width:100%;
+/* TITLE */
+.header{
   text-align:center;
-  color:#ffd700;
-  text-shadow:0 0 15px #ffd700;
+  padding:10px;
+  font-weight:bold;
 }
 
-/* AI CORE */
-.core {
-  position:absolute;
-  top:35%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:140px;
-  height:140px;
+/* CORE */
+.core{
+  width:120px;
+  height:120px;
+  margin:30px auto;
   border-radius:50%;
   background:radial-gradient(circle,#ffd700,#000);
-  box-shadow:0 0 40px #ffd700,0 0 80px #ffd700;
-  animation:pulse 2s infinite;
+  box-shadow:0 0 40px #ffd700;
 }
 
-@keyframes pulse {
-  0% { transform:translate(-50%,-50%) scale(1); }
-  50% { transform:translate(-50%,-50%) scale(1.1); }
-  100% { transform:translate(-50%,-50%) scale(1); }
-}
-
-/* PANELS */
-.panels {
-  position:absolute;
-  top:55%;
-  width:100%;
+/* SYSTEM GRID */
+.system-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
-  padding:10px;
+  gap:12px;
+  padding:15px;
 }
 
-.panel {
-  padding:20px;
-  text-align:center;
-  border:1px solid #ffd700;
-  border-radius:12px;
-  background:rgba(255,215,0,0.05);
-  box-shadow:0 0 15px rgba(255,215,0,0.4);
+.system-card{
+  background: rgba(255,215,0,0.05);
+  border:1px solid rgba(255,215,0,0.4);
+  border-radius:15px;
+  padding:15px;
+  box-shadow:0 0 15px rgba(255,215,0,0.2);
+  transition:0.3s;
+}
+
+.system-card:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 25px rgba(255,215,0,0.6);
 }
 
 /* MODE SCREEN */
-.mode-screen {
+.mode-screen{
   position:fixed;
   top:0;
   left:0;
   width:100%;
   height:100%;
   background:#000;
-  transform:translateY(100%);
-  transition:0.4s;
-  z-index:100;
+  display:none;
+  flex-direction:column;
 }
 
-.mode-screen.active {
-  transform:translateY(0);
-}
-
-.mode-header {
+.mode-screen.active{
   display:flex;
-  justify-content:space-between;
+}
+
+.mode-header{
   padding:15px;
-  border-bottom:1px solid #ffd700;
+  text-align:center;
+  font-weight:bold;
+  border-bottom:1px solid rgba(255,215,0,0.3);
 }
 
-.mode-content {
+.mode-content{
+  flex:1;
+  overflow:auto;
   padding:15px;
-  overflow-y:auto;
-  height:calc(100% - 60px);
-}
-
-.mode-card {
-  padding:15px;
-  margin-bottom:10px;
-  border:1px solid #ffd700;
-  border-radius:10px;
-  background:rgba(255,215,0,0.05);
-}
-
-/* CHAT */
-.chat {
-  position:absolute;
-  bottom:140px;
-  width:100%;
-  max-height:150px;
-  overflow-y:auto;
-  padding:10px;
-}
-
-.msg {
-  margin:5px 0;
-  padding:10px;
-  border:1px solid #ffd700;
-  border-radius:10px;
 }
 
 /* INPUT */
-.input-area {
-  position:absolute;
-  bottom:0;
+textarea{
   width:100%;
-  padding:10px;
-}
-
-textarea {
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ffd700;
-  background:black;
-  color:#ffd700;
-}
-
-.send-btn {
-  width:100%;
-  margin-top:5px;
-  padding:12px;
-  background:linear-gradient(90deg,#ffd700,#00fff7);
+  padding:15px;
   border:none;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+}
+
+/* BUTTON */
+.send-btn{
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  background:linear-gradient(90deg,#ffd700,#00ffcc);
+  border:none;
+  border-radius:10px;
   font-weight:bold;
+}
+
+/* CHAT */
+.chat-box{
+  margin-top:10px;
+}
+
+.msg{
+  padding:10px;
+  margin:5px 0;
+  border-radius:10px;
+}
+
+.user{
+  background:#222;
+}
+
+.ai{
+  background:rgba(255,215,0,0.1);
 }
 </style>
 </head>
 
 <body>
 
-<div class="grid"></div>
-
 <div class="header">DatabaseAI</div>
-
 <div class="core"></div>
 
-<!-- PANELS -->
-<div class="panels">
-  <div class="panel" onclick="openMode('business')">💼 Business</div>
-  <div class="panel" onclick="openMode('mind')">🧠 Mind</div>
-  <div class="panel" onclick="openMode('analysis')">📊 Analysis</div>
-  <div class="panel" onclick="openMode('vault')">🧾 Vault</div>
+<!-- SYSTEM GRID -->
+<div class="system-grid">
+
+  <div class="system-card" onclick="openMode('business')">
+    💼 Business Engine
+  </div>
+
+  <div class="system-card" onclick="openMode('mind')">
+    🧠 Mind System
+  </div>
+
+  <div class="system-card" onclick="openMode('analysis')">
+    📊 Analysis Core
+  </div>
+
+  <div class="system-card" onclick="openMode('vault')">
+    🗂 Vault
+  </div>
+
+  <div class="system-card" onclick="openMode('create')">
+    ⚡ Create Engine
+  </div>
+
 </div>
 
 <!-- MODE SCREEN -->
 <div id="modeScreen" class="mode-screen">
-  <div class="mode-header">
-    <span id="modeTitle"></span>
-    <button onclick="closeMode()">✕</button>
-  </div>
-  <div id="modeContent" class="mode-content"></div>
-</div>
-
-<!-- CHAT -->
-<div id="chat" class="chat"></div>
-
-<!-- INPUT -->
-<div class="input-area">
-  <textarea id="input" placeholder="Command the system..."></textarea>
-  <button class="send-btn" onclick="send()">EXECUTE</button>
+  <div class="mode-header" id="modeTitle"></div>
+  <div class="mode-content" id="modeContent"></div>
 </div>
 
 <script>
+
 let mode = "chat";
 
 /* OPEN MODE */
@@ -203,115 +185,103 @@ function openMode(type){
 
   screen.classList.add("active");
 
-  if(type === "business"){
-    mode = "business";
-    title.innerText = "Business Intelligence";
-    content.innerHTML = `
-      <div class="mode-card">Startup Strategy</div>
-      <div class="mode-card">Growth Plan</div>
-      <div class="mode-card">Money Systems</div>
-    `;
+  if(type==="business"){
+    title.innerText="Business Engine";
+    content.innerHTML=getChatUI();
+    mode="business";
   }
 
-  if(type === "mind"){
-    mode = "mind";
-    title.innerText = "Mind & Therapy";
-    content.innerHTML = `
-      <div class="mode-card">Talk freely</div>
-      <div class="mode-card">Emotional clarity</div>
-      <div class="mode-card">Guidance</div>
-    `;
+  if(type==="mind"){
+    title.innerText="Mind System";
+    content.innerHTML=getChatUI();
+    mode="mind";
   }
 
-  if(type === "analysis"){
-    mode = "analysis";
-    title.innerText = "Analysis Lab";
-    content.innerHTML = `
-      <textarea id="analyzeInput" placeholder="Paste anything..."></textarea>
-      <button class="send-btn" onclick="analyzeNow()">Analyze</button>
-      <div id="analysisResult"></div>
+  if(type==="analysis"){
+    title.innerText="Analysis Core";
+    content.innerHTML=`
+      <textarea id="input"></textarea>
+      <button class="send-btn" onclick="send()">Analyze</button>
+      <div id="chat" class="chat-box"></div>
     `;
+    mode="analysis";
   }
 
-  if(type === "vault"){
-    mode = "vault";
-    title.innerText = "Memory Vault";
-    content.innerHTML = `<div>Loading vault...</div>`;
+  if(type==="vault"){
+    title.innerText="Vault";
+    content.innerHTML=`
+      <button class="send-btn" onclick="clearVault()">Clear Vault</button>
+      <div id="vaultData"></div>
+    `;
     loadVault();
   }
+
+  if(type==="create"){
+    title.innerText="Create Engine";
+    content.innerHTML=`
+      <textarea id="input" placeholder="Describe what you want to build..."></textarea>
+      <button class="send-btn" onclick="send()">Build</button>
+      <div id="chat" class="chat-box"></div>
+    `;
+    mode="create";
+  }
 }
 
-/* CLOSE */
-function closeMode(){
-  document.getElementById("modeScreen").classList.remove("active");
+/* CHAT UI */
+function getChatUI(){
+  return `
+    <textarea id="input" placeholder="Ask anything..."></textarea>
+    <button class="send-btn" onclick="send()">Execute</button>
+    <div id="chat" class="chat-box"></div>
+  `;
 }
 
-/* SEND CHAT */
+/* SEND */
 async function send(){
-  const text = input.value;
+  const input = document.getElementById("input").value;
+  if(!input) return;
 
-  chat.innerHTML += `<div class="msg">${text}</div>`;
+  const chat = document.getElementById("chat");
 
-  let final = text;
-
-  if(mode === "business"){
-    final = "Business expert mode:\n" + text;
-  }
-
-  if(mode === "mind"){
-    final = "Act like a therapist:\n" + text;
-  }
+  chat.innerHTML += `<div class="msg user">${input}</div>`;
 
   const res = await fetch("/api/chat",{
     method:"POST",
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({message:final})
+    body:JSON.stringify({message:input})
   });
 
   const data = await res.json();
 
-  typeEffect(data.reply);
-  input.value="";
+  chat.innerHTML += `<div class="msg ai">${data.reply}</div>`;
+
+  saveMemory(input, data.reply);
 }
 
-/* TYPE EFFECT */
-function typeEffect(text){
-  let i=0, out="";
-  const box=document.createElement("div");
-  box.className="msg";
-  chat.appendChild(box);
-
-  const inter=setInterval(()=>{
-    out+=text[i];
-    box.innerHTML=out;
-    i++;
-    if(i>=text.length) clearInterval(inter);
-  },10);
+/* MEMORY */
+function saveMemory(user, ai){
+  let mem = JSON.parse(localStorage.getItem("memory") || "[]");
+  mem.push({user, ai});
+  localStorage.setItem("memory", JSON.stringify(mem));
 }
 
-/* ANALYSIS */
-async function analyzeNow(){
-  const text = document.getElementById("analyzeInput").value;
-
-  const res = await fetch("/api/chat",{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({message:"Analyze deeply:\n"+text})
+/* LOAD VAULT */
+function loadVault(){
+  let mem = JSON.parse(localStorage.getItem("memory") || "[]");
+  let html="";
+  mem.forEach(m=>{
+    html+=`<div class="msg user">${m.user}</div>`;
+    html+=`<div class="msg ai">${m.ai}</div>`;
   });
-
-  const data = await res.json();
-
-  document.getElementById("analysisResult").innerHTML = data.reply;
+  document.getElementById("vaultData").innerHTML=html;
 }
 
-/* VAULT */
-async function loadVault(){
-  const res = await fetch("/vault");
-  const data = await res.json();
-
-  document.getElementById("modeContent").innerHTML =
-    data.map(v=>`<div class="mode-card">${v.content}</div>`).join("");
+/* CLEAR */
+function clearVault(){
+  localStorage.removeItem("memory");
+  loadVault();
 }
+
 </script>
 
 </body>
