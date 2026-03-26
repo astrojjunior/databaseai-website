@@ -31,18 +31,23 @@ body::after{
 .header{
   text-align:center;
   padding:10px;
-  font-weight:bold;
-  letter-spacing:2px;
+  letter-spacing:3px;
 }
 
 /* CORE */
 .core{
-  width:140px;
-  height:140px;
+  width:150px;
+  height:150px;
   margin:20px auto;
   border-radius:50%;
   background:radial-gradient(circle,#ffd700,#000);
-  box-shadow:0 0 60px #ffd700;
+  box-shadow:0 0 80px #ffd700;
+  transition:0.4s;
+}
+
+.core.active{
+  box-shadow:0 0 150px #ffd700;
+  transform:scale(1.1);
 }
 
 /* GRID */
@@ -51,7 +56,6 @@ body::after{
   grid-template-columns:1fr 1fr;
   gap:15px;
   padding:15px;
-  height:50vh;
 }
 
 .system-card{
@@ -59,9 +63,6 @@ body::after{
   border:1px solid rgba(255,215,0,0.5);
   border-radius:20px;
   padding:20px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
   box-shadow:0 0 20px rgba(255,215,0,0.2);
   transition:0.3s;
 }
@@ -73,7 +74,7 @@ body::after{
 
 .system-card h3{
   margin:0;
-  font-size:15px;
+  font-size:14px;
 }
 
 .system-card p{
@@ -107,18 +108,36 @@ body::after{
   width:100%;
   height:100%;
   background:#000;
-  display:none;
+  display:flex;
   flex-direction:column;
+  transform:scale(1.1);
+  opacity:0;
+  pointer-events:none;
+  transition:all 0.4s ease;
 }
 
 .mode-screen.active{
-  display:flex;
+  transform:scale(1);
+  opacity:1;
+  pointer-events:auto;
 }
 
+/* HEADER INSIDE MODE */
 .mode-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   padding:15px;
-  text-align:center;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.6);
   border-bottom:1px solid rgba(255,215,0,0.3);
+}
+
+.back-btn{
+  padding:8px 14px;
+  border-radius:12px;
+  border:1px solid rgba(255,215,0,0.6);
+  background: rgba(255,215,0,0.05);
 }
 
 .mode-content{
@@ -127,6 +146,7 @@ body::after{
   padding:15px;
 }
 
+/* INPUT */
 textarea{
   width:100%;
   padding:15px;
@@ -136,6 +156,7 @@ textarea{
   color:#fff;
 }
 
+/* BUTTON */
 .send-btn{
   width:100%;
   padding:15px;
@@ -143,9 +164,9 @@ textarea{
   border:none;
   border-radius:10px;
   background:linear-gradient(90deg,#ffd700,#00ffcc);
-  font-weight:bold;
 }
 
+/* CHAT */
 .msg{
   padding:10px;
   margin:5px 0;
@@ -154,6 +175,7 @@ textarea{
 
 .user{ background:#222; }
 .ai{ background:rgba(255,215,0,0.1); }
+
 </style>
 </head>
 
@@ -162,7 +184,7 @@ textarea{
 <div class="header">DATABASE AI</div>
 <div class="core"></div>
 
-<!-- FULL CONTROL GRID -->
+<!-- GRID -->
 <div class="system-grid">
 
   <div class="system-card" onclick="openMode('business')">
@@ -177,7 +199,7 @@ textarea{
 
   <div class="system-card" onclick="openMode('analysis')">
     <h3>ANALYSIS CORE</h3>
-    <p>Breakdown • Insight • Patterns</p>
+    <p>Breakdown • Insight</p>
   </div>
 
   <div class="system-card" onclick="openMode('vault')">
@@ -197,58 +219,72 @@ textarea{
 
 </div>
 
-<!-- COMMAND BAR -->
+<!-- COMMAND -->
 <div class="command-bar">
   <input class="command-input" id="quickInput" placeholder="Command the system..." onkeydown="quickSend(event)">
 </div>
 
 <!-- MODE SCREEN -->
 <div id="modeScreen" class="mode-screen">
-  <div class="mode-header" id="modeTitle"></div>
+
+  <div class="mode-header">
+    <div class="back-btn" onclick="closeMode()">RETURN</div>
+    <div id="modeTitle"></div>
+  </div>
+
   <div class="mode-content" id="modeContent"></div>
+
 </div>
 
 <script>
 
-let mode="chat";
+let startY=0;
 
-/* OPEN MODE */
+/* OPEN */
 function openMode(type){
   const screen=document.getElementById("modeScreen");
   const title=document.getElementById("modeTitle");
-  const content=document.getElementById("modeContent");
 
   screen.classList.add("active");
+  document.querySelector(".core").classList.remove("active");
 
-  if(type==="business"||type==="mind"||type==="chat"){
-    title.innerText=type.toUpperCase();
-    content.innerHTML=getChatUI();
-    mode=type;
-  }
-
-  if(type==="analysis"){
-    title.innerText="ANALYSIS CORE";
-    content.innerHTML=getChatUI("Analyze...");
-    mode="analysis";
-  }
-
-  if(type==="create"){
-    title.innerText="CREATE ENGINE";
-    content.innerHTML=getChatUI("Describe what to build...");
-    mode="create";
-  }
+  title.innerText=type.toUpperCase();
 
   if(type==="vault"){
-    title.innerText="MEMORY VAULT";
-    content.innerHTML=`<button class="send-btn" onclick="clearVault()">CLEAR</button><div id="vaultData"></div>`;
+    document.getElementById("modeContent").innerHTML=`<button onclick="clearVault()">CLEAR</button><div id="vaultData"></div>`;
     loadVault();
+  } else {
+    document.getElementById("modeContent").innerHTML=getChatUI();
   }
 }
 
+/* CLOSE */
+function closeMode(){
+  const screen=document.getElementById("modeScreen");
+  const core=document.querySelector(".core");
+
+  screen.classList.remove("active");
+
+  core.classList.add("active");
+  setTimeout(()=>core.classList.remove("active"),600);
+}
+
+/* SWIPE CLOSE */
+document.getElementById("modeScreen").addEventListener("touchstart",e=>{
+  startY=e.touches[0].clientY;
+});
+
+document.getElementById("modeScreen").addEventListener("touchmove",e=>{
+  let moveY=e.touches[0].clientY;
+  if(moveY-startY>120){
+    closeMode();
+  }
+});
+
 /* CHAT UI */
-function getChatUI(placeholder="Ask anything..."){
+function getChatUI(){
   return `
-    <textarea id="input" placeholder="${placeholder}"></textarea>
+    <textarea id="input"></textarea>
     <button class="send-btn" onclick="send()">EXECUTE</button>
     <div id="chat"></div>
   `;
@@ -281,7 +317,7 @@ function quickSend(e){
     setTimeout(()=>{
       document.getElementById("input").value=document.getElementById("quickInput").value;
       send();
-    },300);
+    },200);
   }
 }
 
