@@ -3,218 +3,209 @@
 <head>
 <title>DatabaseAI</title>
 
-<!-- FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin:0;
-  background:#000;
-  color:#00fff7;
   font-family:'Orbitron', sans-serif;
-  display:flex;
-  flex-direction:column;
-  height:100vh;
+  overflow:hidden;
+  color:#ffd700;
+
+  background:
+    radial-gradient(circle at center, rgba(255,215,0,0.15), transparent 60%),
+    #000;
+}
+
+/* 🌌 BACKGROUND GRID */
+.grid {
+  position:fixed;
+  width:100%;
+  height:100%;
+  background-image:
+    linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
+  background-size:50px 50px;
+  animation:moveGrid 10s linear infinite;
+}
+
+@keyframes moveGrid {
+  0% { transform:translateY(0); }
+  100% { transform:translateY(50px); }
+}
+
+/* 🔥 AI CORE */
+.core {
+  position:absolute;
+  top:40%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:150px;
+  height:150px;
+  border-radius:50%;
+
+  background:radial-gradient(circle, #ffd700, #000);
+  box-shadow:
+    0 0 30px #ffd700,
+    0 0 60px #ffd700,
+    inset 0 0 30px #000;
+
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform:translate(-50%,-50%) scale(1); }
+  50% { transform:translate(-50%,-50%) scale(1.1); }
+  100% { transform:translate(-50%,-50%) scale(1); }
 }
 
 /* HEADER */
 .header {
+  position:absolute;
+  top:10px;
+  width:100%;
   text-align:center;
-  padding:15px;
-  font-size:18px;
-  color:#00fff7;
-  text-shadow:0 0 10px #00fff7;
+  color:#ffd700;
+  text-shadow:0 0 15px #ffd700;
 }
 
-/* CHAT AREA */
+/* CHAT */
 .chat {
-  flex:1;
+  position:absolute;
+  top:60%;
+  width:100%;
+  height:30%;
   overflow-y:auto;
   padding:10px;
 }
 
 /* MESSAGES */
 .msg {
-  margin:10px 0;
+  margin:8px 0;
   padding:12px;
   border-radius:10px;
-  background:rgba(0,255,247,0.05);
-  border:1px solid rgba(0,255,247,0.3);
-  box-shadow:0 0 10px rgba(0,255,247,0.2);
-}
-
-.user {
-  border-color:#ffd700;
+  background:rgba(255,215,0,0.05);
+  border:1px solid #ffd700;
   box-shadow:0 0 10px rgba(255,215,0,0.4);
 }
 
-/* INPUT AREA */
+/* INPUT */
 .input-area {
+  position:absolute;
+  bottom:0;
+  width:100%;
   padding:10px;
-  border-top:1px solid #00fff7;
 }
 
-/* TEXTAREA */
 textarea {
   width:100%;
-  background:#000;
-  color:#00fff7;
-  border:1px solid #00fff7;
-  border-radius:10px;
   padding:12px;
-  box-shadow:0 0 10px #00fff7 inset;
-  font-size:14px;
+  border-radius:10px;
+  border:1px solid #ffd700;
+  background:black;
+  color:#ffd700;
 }
 
-/* ACTION BUTTONS */
+/* BUTTONS */
 .actions {
   display:flex;
-  gap:5px;
-  margin-top:10px;
+  margin-top:5px;
 }
 
 .actions button {
   flex:1;
+  margin:2px;
   padding:10px;
   background:black;
-  color:#00fff7;
-  border:1px solid #00fff7;
-  border-radius:8px;
-  box-shadow:0 0 10px rgba(0,255,247,0.3);
+  border:1px solid #ffd700;
+  color:#ffd700;
 }
 
-/* SEND BUTTON */
+/* SEND */
 .send-btn {
   width:100%;
-  margin-top:10px;
-  padding:14px;
+  margin-top:5px;
+  padding:12px;
   background:linear-gradient(90deg,#ffd700,#00fff7);
   border:none;
-  border-radius:10px;
   font-weight:bold;
-  color:black;
-}
-
-/* SCAN LINE */
-body::before {
-  content:"";
-  position:fixed;
-  width:100%;
-  height:2px;
-  background:#00fff7;
-  top:0;
-  animation:scan 4s linear infinite;
-}
-
-@keyframes scan {
-  0% { top:0 }
-  100% { top:100% }
 }
 </style>
 </head>
 
 <body>
 
+<div class="grid"></div>
+
 <div class="header">DatabaseAI</div>
+
+<div class="core"></div>
 
 <div id="chat" class="chat"></div>
 
 <div class="input-area">
 
-  <textarea id="input" placeholder="Think, ask, paste, analyze..."></textarea>
+  <textarea id="input" placeholder="Command the system..."></textarea>
 
   <div class="actions">
     <button onclick="mode='chat'">Chat</button>
     <button onclick="mode='analyze'">Analyze</button>
-    <button onclick="triggerUpload()">Upload</button>
-    <button onclick="loadVault()">Vault</button>
+    <button onclick="upload()">Upload</button>
+    <button onclick="vault()">Vault</button>
   </div>
-
-  <input type="file" id="fileInput" style="display:none">
 
   <button class="send-btn" onclick="send()">EXECUTE</button>
 
 </div>
 
 <script>
-let token = "";
-let mode = "chat";
+let mode="chat";
 
-/* SEND MESSAGE */
+/* SEND */
 async function send(){
-  const text = document.getElementById("input").value;
+  const text=input.value;
+  chat.innerHTML+=`<div class="msg">${text}</div>`;
 
-  if(!text) return;
-
-  chat.innerHTML += `<div class="msg user">${text}</div>`;
-
-  let finalText = text;
-
-  if(mode === "analyze"){
-    finalText = "Analyze deeply:\n\n" + text;
+  let final=text;
+  if(mode==="analyze"){
+    final="Analyze deeply:\n\n"+text;
   }
 
-  const res = await fetch("/api/chat",{
+  const res=await fetch("/api/chat",{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":token
-    },
-    body:JSON.stringify({message:finalText})
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:final})
   });
 
-  const data = await res.json();
+  const data=await res.json();
 
-  typeEffect(data.reply);
-
-  document.getElementById("input").value="";
+  type(data.reply);
+  input.value="";
 }
 
-/* TYPING EFFECT */
-function typeEffect(text){
-  let i = 0;
-  let output = "";
+/* TYPE EFFECT */
+function type(t){
+  let i=0;
+  let out="";
+  const box=document.createElement("div");
+  box.className="msg";
+  chat.appendChild(box);
 
-  const box = document.createElement("div");
-  box.className = "msg ai";
-  document.getElementById("chat").appendChild(box);
-
-  const interval = setInterval(()=>{
-    output += text[i];
-    box.innerHTML = output;
+  const inter=setInterval(()=>{
+    out+=t[i];
+    box.innerHTML=out;
     i++;
-    if(i >= text.length) clearInterval(interval);
-  }, 10);
+    if(i>=t.length) clearInterval(inter);
+  },10);
 }
 
-/* FILE UPLOAD */
-function triggerUpload(){
-  document.getElementById("fileInput").click();
+/* MOCK */
+function upload(){
+  type("Upload system ready.");
 }
 
-document.getElementById("fileInput").addEventListener("change", async function(){
-  const file = this.files[0];
-
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const res = await fetch("/upload",{
-    method:"POST",
-    headers:{Authorization:token},
-    body:formData
-  });
-
-  const data = await res.json();
-
-  typeEffect(data.analysis);
-});
-
-/* VAULT */
-async function loadVault(){
-  const res = await fetch("/vault",{headers:{Authorization:token}});
-  const data = await res.json();
-
-  typeEffect(JSON.stringify(data, null, 2));
+function vault(){
+  type("Vault accessed.");
 }
 </script>
 
