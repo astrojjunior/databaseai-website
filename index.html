@@ -1,267 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DatabaseAI</title>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0a0a0a;
-  color: #eaeaea;
-}
-
-.container {
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
-}
-
-h1 {
-  font-size: 42px;
-  background: linear-gradient(90deg, gold, #fff);
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-/* INPUT */
-input {
-  width: 100%;
-  padding: 15px;
-  margin-top: 10px;
-  border-radius: 12px;
-  border: 1px solid #222;
-  background: #111;
-  color: #fff;
-}
-
-/* BUTTON */
-.button {
-  margin-top: 12px;
-  padding: 15px;
-  width: 100%;
-  border-radius: 30px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  background: linear-gradient(90deg, gold, #333);
-  color: black;
-}
-
-/* CHAT */
-.chat-box {
-  margin-top: 20px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.msg {
-  padding: 15px;
-  border-radius: 15px;
-  margin-top: 10px;
-}
-
-/* USER */
-.msg.user {
-  background: #111;
-  color: #aaa;
-}
-
-/* AI GOLD TEXT */
-.msg.ai {
-  background: #111;
-  background: linear-gradient(90deg, gold, #fff);
-  -webkit-background-clip: text;
-  color: transparent;
-  font-weight: 500;
-}
-
-.hidden {
-  display: none;
-}
-</style>
-</head>
-
 <body>
 
 <div class="container">
+  <h1>DatabaseAI</h1>
 
-<h1>DatabaseAI</h1>
+  <div id="chat"></div>
 
-<!-- AUTH -->
-<div id="auth">
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-
-  <button class="button" onclick="signup()">Sign Up</button>
-  <button class="button" onclick="login()">Login</button>
-</div>
-
-<!-- APP -->
-<div id="app" class="hidden">
-
-  <button class="button" onclick="logout()">Logout</button>
-
-  <div id="chat" class="chat-box"></div>
-
-  <input id="message" placeholder="Enter command...">
-
-  <button class="button" onclick="askAI()">Execute</button>
-  <button class="button" onclick="discover()">Discover</button>
-  <button class="button" onclick="premium()">Unlock Premium</button>
-
-</div>
-
+  <input id="input" placeholder="Enter command..." />
+  <button onclick="send()">Execute</button>
 </div>
 
 <script>
-const API = "https://database-backend-rnw0.onrender.com";
-let token = localStorage.getItem("token");
+const API_URL = "https://database-backend-rnw0.onrender.com/api/chat";
 
-/* AUTO LOGIN */
-if (token) {
-  document.getElementById("auth").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
-}
+async function send() {
+  const input = document.getElementById("input");
+  const chat = document.getElementById("chat");
 
-/* SIGNUP */
-async function signup() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const res = await fetch(API + "/signup", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-  alert(data.message);
-}
-
-/* LOGIN */
-async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const res = await fetch(API + "/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-    location.reload();
-  } else {
-    alert(data.message);
-  }
-}
-
-/* LOGOUT */
-function logout() {
-  localStorage.removeItem("token");
-  location.reload();
-}
-
-/* STREAMING FUNCTION */
-function streamText(element, text) {
-  element.innerHTML = "";
-  let i = 0;
-
-  function type() {
-    if (i < text.length) {
-      element.innerHTML += text.charAt(i);
-      i++;
-      setTimeout(type, 10); // speed
-    }
-  }
-  type();
-}
-
-/* AI CHAT */
-async function askAI() {
-  const input = document.getElementById("message");
   const message = input.value;
-
   if (!message) return;
 
-  const chat = document.getElementById("chat");
-
-  // USER MSG
-  const userMsg = document.createElement("div");
-  userMsg.className = "msg user";
-  userMsg.innerText = "You: " + message;
-  chat.appendChild(userMsg);
+  // Show user message
+  chat.innerHTML += `<p><b>You:</b> ${message}</p>`;
 
   input.value = "";
 
-  // AI MSG
-  const aiMsg = document.createElement("div");
-  aiMsg.className = "msg ai";
-  chat.appendChild(aiMsg);
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
 
-  const res = await fetch(API + "/ask", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": token
-    },
-    body: JSON.stringify({ message })
-  });
+    const data = await res.json();
 
-  const data = await res.json();
+    typeText(data.reply);
 
-  streamText(aiMsg, data.reply);
-
-  chat.scrollTop = chat.scrollHeight;
+  } catch (err) {
+    chat.innerHTML += `<p style="color:red;">Error connecting</p>`;
+  }
 }
 
-/* DISCOVER (REAL-TIME SEARCH) */
-async function discover() {
-  const input = document.getElementById("message");
-  const query = input.value;
-
-  if (!query) return;
-
+function typeText(text) {
   const chat = document.getElementById("chat");
 
-  const userMsg = document.createElement("div");
-  userMsg.className = "msg user";
-  userMsg.innerText = "Discover: " + query;
-  chat.appendChild(userMsg);
+  let i = 0;
+  const p = document.createElement("p");
+  p.innerHTML = "<b>AI:</b> ";
+  chat.appendChild(p);
 
-  input.value = "";
-
-  const aiMsg = document.createElement("div");
-  aiMsg.className = "msg ai";
-  chat.appendChild(aiMsg);
-
-  const res = await fetch(API + "/search", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": token
-    },
-    body: JSON.stringify({ query })
-  });
-
-  const data = await res.json();
-
-  streamText(aiMsg, data.reply);
-
-  chat.scrollTop = chat.scrollHeight;
-}
-
-/* PREMIUM */
-function premium() {
-  alert("Premium system coming soon 💎");
+  const interval = setInterval(() => {
+    p.innerHTML += text[i];
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, 20);
 }
 </script>
 
 </body>
-</html>
