@@ -7,61 +7,36 @@
 body {
   margin:0;
   font-family: Arial;
-  background: linear-gradient(135deg,#000,#0a0a0a);
+  background:#000;
   color:white;
+  max-width:500px;
+  margin:auto;
 }
 
 /* HEADER */
 .header {
   text-align:center;
   padding:20px;
-  font-size:28px;
+  font-size:24px;
   font-weight:bold;
-  background: linear-gradient(90deg,gold,#ffcc00);
-  -webkit-background-clip: text;
-  color: transparent;
+  color:gold;
 }
 
-/* NAV */
-.nav {
-  display:flex;
-  overflow-x:auto;
-  gap:10px;
-  padding:10px;
-  justify-content:center;
-}
-
-.nav button {
-  padding:10px 15px;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:white;
-  cursor:pointer;
-}
-
-/* SCREEN */
+/* SCREENS */
 .screen {
   display:none;
-  max-width:500px;
-  margin:auto;
   padding:15px;
+  padding-bottom:80px;
 }
 
 .active {
   display:block;
 }
 
-/* TITLE */
-.title {
-  text-align:center;
-  margin-bottom:15px;
-}
-
-/* INPUT */
-input {
+/* INPUTS */
+input, textarea {
   width:100%;
-  padding:15px;
+  padding:14px;
   margin-top:10px;
   border:none;
   border-radius:10px;
@@ -72,11 +47,11 @@ input {
 /* BUTTON */
 .main-btn {
   width:100%;
-  padding:15px;
+  padding:14px;
   margin-top:10px;
   border:none;
   border-radius:10px;
-  background: linear-gradient(90deg,gold,#ffcc00);
+  background:gold;
   color:black;
   font-weight:bold;
 }
@@ -85,7 +60,6 @@ input {
 .chat-box {
   height:300px;
   overflow-y:auto;
-  margin-bottom:10px;
 }
 
 .msg {
@@ -94,35 +68,35 @@ input {
   border-radius:10px;
 }
 
-.user {
-  background:#222;
-}
+.user { background:#222; }
+.ai { background:#333; }
 
-.ai {
-  background:linear-gradient(90deg,#222,#333);
-}
-
-/* CARDS */
+/* CARD */
 .card {
   background:#111;
   padding:15px;
   border-radius:12px;
   margin-bottom:10px;
-  border:1px solid #222;
 }
 
-.card button {
-  margin-top:10px;
+/* NAV */
+.bottom-nav {
+  position:fixed;
+  bottom:0;
   width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#222;
-  color:white;
+  max-width:500px;
+  display:flex;
+  justify-content:space-around;
+  background:#111;
+  padding:10px 0;
+  border-top:1px solid #222;
 }
 
-.premium {
-  border:1px solid gold;
+.bottom-nav button {
+  background:none;
+  border:none;
+  color:white;
+  font-size:12px;
 }
 </style>
 </head>
@@ -131,89 +105,81 @@ input {
 
 <div class="header">DatabaseAI</div>
 
-<div class="nav">
-  <button onclick="show('auth')">Access</button>
-  <button onclick="show('ai')">AI</button>
-  <button onclick="show('discover')">Discover</button>
-  <button onclick="show('decode')">Decode</button>
-  <button onclick="show('vault')">Vault</button>
-  <button onclick="show('premium')">Premium</button>
-</div>
-
 <!-- AUTH -->
 <div id="auth" class="screen active">
-  <h2 class="title">Access DatabaseAI</h2>
-
   <input id="email" placeholder="Email">
   <input id="pass" placeholder="Password" type="password">
 
   <button class="main-btn" onclick="signup()">Create Account</button>
-  <button class="main-btn" onclick="login()">Enter System</button>
+  <button class="main-btn" onclick="login()">Login</button>
 </div>
 
 <!-- AI -->
 <div id="ai" class="screen">
-  <h2 class="title">AI Core</h2>
-
   <div id="chat" class="chat-box"></div>
 
-  <input id="msg" placeholder="Enter command...">
+  <input id="msg" placeholder="Ask anything...">
   <button class="main-btn" onclick="send()">Execute</button>
 </div>
 
 <!-- DISCOVER -->
 <div id="discover" class="screen">
-  <h2 class="title">Discover Intelligence</h2>
-
   <div class="card">
-    <p>💡 Business Ideas</p>
+    <p>💡 Business Idea</p>
     <button onclick="quickAsk('Give me a powerful business idea')">Explore</button>
   </div>
 
   <div class="card">
-    <p>📈 Growth Strategy</p>
-    <button onclick="quickAsk('How to grow a startup fast')">Explore</button>
-  </div>
-
-  <div class="card">
-    <p>🧠 Elite Mindset</p>
-    <button onclick="quickAsk('How to think like a billionaire')">Explore</button>
+    <p>📈 Growth</p>
+    <button onclick="quickAsk('How to grow a startup')">Explore</button>
   </div>
 </div>
 
 <!-- DECODE -->
 <div id="decode" class="screen">
-  <h2 class="title">Decode Intelligence</h2>
 
-  <input type="file" id="fileInput">
+  <!-- FILE -->
+  <div class="card">
+    <p>📁 Upload File</p>
+    <input type="file" id="fileInput">
+    <button class="main-btn" onclick="uploadFile()">Analyze File</button>
+  </div>
 
-  <button class="main-btn" onclick="uploadFile()">Analyze File</button>
+  <!-- PASTE -->
+  <div class="card">
+    <p>🧠 Paste Text</p>
+    <textarea id="pasteInput" placeholder="Paste anything..."></textarea>
+    <button class="main-btn" onclick="analyzeText()">Analyze Text</button>
+  </div>
 
   <div id="fileResult"></div>
 </div>
 
 <!-- VAULT -->
 <div id="vault" class="screen">
-  <h2 class="title">Vault</h2>
-
-  <button class="main-btn" onclick="loadVault()">Load Intelligence</button>
-
+  <button class="main-btn" onclick="loadVault()">Load Vault</button>
   <div id="vaultData"></div>
 </div>
 
 <!-- PREMIUM -->
 <div id="premium" class="screen">
-  <h2 class="title">Premium Access</h2>
-
-  <div class="card premium">
+  <div class="card">
     <p>✔ Unlimited AI</p>
-    <p>✔ File Intelligence</p>
+    <p>✔ File Analysis</p>
     <p>✔ Memory Vault</p>
   </div>
 
-  <input id="ref" placeholder="Payment Reference">
+  <input id="ref" placeholder="Payment Ref">
+  <button class="main-btn" onclick="pay()">Unlock</button>
+</div>
 
-  <button class="main-btn" onclick="pay()">Unlock Premium</button>
+<!-- NAV -->
+<div class="bottom-nav">
+  <button onclick="show('ai')">AI</button>
+  <button onclick="show('discover')">Discover</button>
+  <button onclick="show('decode')">Decode</button>
+  <button onclick="show('vault')">Vault</button>
+  <button onclick="show('premium')">Premium</button>
 </div>
 
 <script>
@@ -246,10 +212,9 @@ async function login(){
   show('ai');
 }
 
-/* AI CHAT WITH TYPING EFFECT */
+/* CHAT */
 async function send(){
   const text=msg.value;
-
   chat.innerHTML += `<div class="msg user">${text}</div>`;
 
   const r=await fetch("/api/chat",{
@@ -263,18 +228,17 @@ async function send(){
 
   const d=await r.json();
 
-  let i=0;
-  let output="";
+  let i=0, out="";
   const box=document.createElement("div");
   box.className="msg ai";
   chat.appendChild(box);
 
   const interval=setInterval(()=>{
-    output+=d.reply[i];
-    box.innerHTML=output;
+    out+=d.reply[i];
+    box.innerHTML=out;
     i++;
     if(i>=d.reply.length) clearInterval(interval);
-  },15);
+  },10);
 
   msg.value="";
 }
@@ -286,10 +250,9 @@ function quickAsk(text){
   send();
 }
 
-/* FILE UPLOAD */
+/* FILE */
 async function uploadFile(){
   const file=document.getElementById("fileInput").files[0];
-
   const formData=new FormData();
   formData.append("file",file);
 
@@ -300,8 +263,24 @@ async function uploadFile(){
   });
 
   const data=await res.json();
+  fileResult.innerHTML=data.analysis;
+}
 
-  document.getElementById("fileResult").innerHTML=data.analysis;
+/* PASTE */
+async function analyzeText(){
+  const text=pasteInput.value;
+
+  const res=await fetch("/api/chat",{
+    method:"POST",
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':token
+    },
+    body:JSON.stringify({message:"Analyze this:\n\n"+text})
+  });
+
+  const data=await res.json();
+  fileResult.innerHTML=data.reply;
 }
 
 /* VAULT */
@@ -311,7 +290,7 @@ async function loadVault(){
 
   vaultData.innerHTML=d.map(v=>`
     <div class="card">
-      <b style="color:gold">${v.title}</b>
+      <b>${v.title}</b>
       <p>${v.content}</p>
     </div>
   `).join("");
@@ -322,13 +301,10 @@ async function pay(){
   await fetch("/submit-payment",{
     method:"POST",
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      userId:"TEMP",
-      reference:ref.value
-    })
+    body:JSON.stringify({userId:"TEMP",reference:ref.value})
   });
 
-  alert("Payment submitted");
+  alert("Submitted");
 }
 </script>
 
