@@ -6,97 +6,79 @@
 <style>
 body {
   margin:0;
-  font-family: Arial;
   background:#000;
   color:white;
-  max-width:500px;
-  margin:auto;
+  font-family: Arial;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
 }
 
 /* HEADER */
 .header {
   text-align:center;
-  padding:20px;
-  font-size:24px;
-  font-weight:bold;
-  color:gold;
-}
-
-/* SCREENS */
-.screen {
-  display:none;
   padding:15px;
-  padding-bottom:80px;
-}
-
-.active {
-  display:block;
-}
-
-/* INPUTS */
-input, textarea {
-  width:100%;
-  padding:14px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:white;
-}
-
-/* BUTTON */
-.main-btn {
-  width:100%;
-  padding:14px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  background:gold;
-  color:black;
+  color:gold;
   font-weight:bold;
 }
 
-/* CHAT */
-.chat-box {
-  height:300px;
+/* CHAT AREA */
+.chat {
+  flex:1;
   overflow-y:auto;
+  padding:10px;
 }
 
 .msg {
-  padding:10px;
-  margin:5px 0;
-  border-radius:10px;
+  margin:8px 0;
+  padding:12px;
+  border-radius:12px;
 }
 
 .user { background:#222; }
 .ai { background:#333; }
 
-/* CARD */
-.card {
-  background:#111;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:10px;
-}
-
-/* NAV */
-.bottom-nav {
-  position:fixed;
-  bottom:0;
-  width:100%;
-  max-width:500px;
-  display:flex;
-  justify-content:space-around;
-  background:#111;
-  padding:10px 0;
+/* INPUT AREA */
+.input-area {
+  padding:10px;
   border-top:1px solid #222;
 }
 
-.bottom-nav button {
-  background:none;
+textarea {
+  width:100%;
   border:none;
+  border-radius:10px;
+  background:#111;
   color:white;
-  font-size:12px;
+  padding:10px;
+}
+
+/* ACTION BAR */
+.actions {
+  display:flex;
+  justify-content:space-around;
+  margin-top:10px;
+}
+
+.actions button {
+  flex:1;
+  margin:3px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:white;
+}
+
+/* SEND */
+.send-btn {
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  background:gold;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -105,206 +87,85 @@ input, textarea {
 
 <div class="header">DatabaseAI</div>
 
-<!-- AUTH -->
-<div id="auth" class="screen active">
-  <input id="email" placeholder="Email">
-  <input id="pass" placeholder="Password" type="password">
+<div id="chat" class="chat"></div>
 
-  <button class="main-btn" onclick="signup()">Create Account</button>
-  <button class="main-btn" onclick="login()">Login</button>
-</div>
+<div class="input-area">
 
-<!-- AI -->
-<div id="ai" class="screen">
-  <div id="chat" class="chat-box"></div>
+  <textarea id="input" placeholder="Think, ask, paste, analyze..."></textarea>
 
-  <input id="msg" placeholder="Ask anything...">
-  <button class="main-btn" onclick="send()">Execute</button>
-</div>
-
-<!-- DISCOVER -->
-<div id="discover" class="screen">
-  <div class="card">
-    <p>💡 Business Idea</p>
-    <button onclick="quickAsk('Give me a powerful business idea')">Explore</button>
+  <div class="actions">
+    <button onclick="mode='chat'">Chat</button>
+    <button onclick="mode='analyze'">Analyze</button>
+    <button onclick="triggerUpload()">Upload</button>
+    <button onclick="loadVault()">Vault</button>
   </div>
 
-  <div class="card">
-    <p>📈 Growth</p>
-    <button onclick="quickAsk('How to grow a startup')">Explore</button>
-  </div>
-</div>
+  <input type="file" id="fileInput" style="display:none">
 
-<!-- DECODE -->
-<div id="decode" class="screen">
+  <button class="send-btn" onclick="send()">Execute</button>
 
-  <!-- FILE -->
-  <div class="card">
-    <p>📁 Upload File</p>
-    <input type="file" id="fileInput">
-    <button class="main-btn" onclick="uploadFile()">Analyze File</button>
-  </div>
-
-  <!-- PASTE -->
-  <div class="card">
-    <p>🧠 Paste Text</p>
-    <textarea id="pasteInput" placeholder="Paste anything..."></textarea>
-    <button class="main-btn" onclick="analyzeText()">Analyze Text</button>
-  </div>
-
-  <div id="fileResult"></div>
-</div>
-
-<!-- VAULT -->
-<div id="vault" class="screen">
-  <button class="main-btn" onclick="loadVault()">Load Vault</button>
-  <div id="vaultData"></div>
-</div>
-
-<!-- PREMIUM -->
-<div id="premium" class="screen">
-  <div class="card">
-    <p>✔ Unlimited AI</p>
-    <p>✔ File Analysis</p>
-    <p>✔ Memory Vault</p>
-  </div>
-
-  <input id="ref" placeholder="Payment Ref">
-  <button class="main-btn" onclick="pay()">Unlock</button>
-</div>
-
-<!-- NAV -->
-<div class="bottom-nav">
-  <button onclick="show('ai')">AI</button>
-  <button onclick="show('discover')">Discover</button>
-  <button onclick="show('decode')">Decode</button>
-  <button onclick="show('vault')">Vault</button>
-  <button onclick="show('premium')">Premium</button>
 </div>
 
 <script>
-let token="";
+let token = "";
+let mode = "chat";
 
-function show(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-/* AUTH */
-async function signup(){
-  await fetch("/auth/signup",{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email:email.value,password:pass.value})
-  });
-  alert("Account created");
-}
-
-async function login(){
-  const r=await fetch("/auth/login",{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email:email.value,password:pass.value})
-  });
-  const d=await r.json();
-  token=d.token;
-  alert("Logged in");
-  show('ai');
-}
-
-/* CHAT */
+/* SEND CORE */
 async function send(){
-  const text=msg.value;
+  const text = input.value;
+
   chat.innerHTML += `<div class="msg user">${text}</div>`;
 
-  const r=await fetch("/api/chat",{
+  let finalText = text;
+
+  if(mode === "analyze"){
+    finalText = "Analyze deeply:\n\n" + text;
+  }
+
+  const res = await fetch("/api/chat",{
     method:"POST",
     headers:{
-      'Content-Type':'application/json',
-      'Authorization':token
+      "Content-Type":"application/json",
+      "Authorization":token
     },
-    body:JSON.stringify({message:text})
+    body:JSON.stringify({message:finalText})
   });
 
-  const d=await r.json();
+  const data = await res.json();
 
-  let i=0, out="";
-  const box=document.createElement("div");
-  box.className="msg ai";
-  chat.appendChild(box);
+  chat.innerHTML += `<div class="msg ai">${data.reply}</div>`;
 
-  const interval=setInterval(()=>{
-    out+=d.reply[i];
-    box.innerHTML=out;
-    i++;
-    if(i>=d.reply.length) clearInterval(interval);
-  },10);
-
-  msg.value="";
+  input.value="";
 }
 
-/* DISCOVER */
-function quickAsk(text){
-  show('ai');
-  msg.value=text;
-  send();
+/* FILE UPLOAD */
+function triggerUpload(){
+  document.getElementById("fileInput").click();
 }
 
-/* FILE */
-async function uploadFile(){
-  const file=document.getElementById("fileInput").files[0];
-  const formData=new FormData();
-  formData.append("file",file);
+document.getElementById("fileInput").addEventListener("change", async function(){
+  const file = this.files[0];
 
-  const res=await fetch("/upload",{
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/upload",{
     method:"POST",
     headers:{Authorization:token},
     body:formData
   });
 
-  const data=await res.json();
-  fileResult.innerHTML=data.analysis;
-}
+  const data = await res.json();
 
-/* PASTE */
-async function analyzeText(){
-  const text=pasteInput.value;
-
-  const res=await fetch("/api/chat",{
-    method:"POST",
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':token
-    },
-    body:JSON.stringify({message:"Analyze this:\n\n"+text})
-  });
-
-  const data=await res.json();
-  fileResult.innerHTML=data.reply;
-}
+  chat.innerHTML += `<div class="msg ai">${data.analysis}</div>`;
+});
 
 /* VAULT */
 async function loadVault(){
-  const r=await fetch("/vault",{headers:{Authorization:token}});
-  const d=await r.json();
+  const res = await fetch("/vault",{headers:{Authorization:token}});
+  const data = await res.json();
 
-  vaultData.innerHTML=d.map(v=>`
-    <div class="card">
-      <b>${v.title}</b>
-      <p>${v.content}</p>
-    </div>
-  `).join("");
-}
-
-/* PAYMENT */
-async function pay(){
-  await fetch("/submit-payment",{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({userId:"TEMP",reference:ref.value})
-  });
-
-  alert("Submitted");
+  chat.innerHTML += `<div class="msg ai">${JSON.stringify(data)}</div>`;
 }
 </script>
 
