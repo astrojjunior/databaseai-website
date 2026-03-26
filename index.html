@@ -3,12 +3,15 @@
 <head>
 <title>DatabaseAI</title>
 
+<!-- FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
 body {
   margin:0;
   background:#000;
-  color:white;
-  font-family: Arial;
+  color:#00fff7;
+  font-family:'Orbitron', sans-serif;
   display:flex;
   flex-direction:column;
   height:100vh;
@@ -18,8 +21,9 @@ body {
 .header {
   text-align:center;
   padding:15px;
-  color:gold;
-  font-weight:bold;
+  font-size:18px;
+  color:#00fff7;
+  text-shadow:0 0 10px #00fff7;
 }
 
 /* CHAT AREA */
@@ -29,56 +33,82 @@ body {
   padding:10px;
 }
 
+/* MESSAGES */
 .msg {
-  margin:8px 0;
+  margin:10px 0;
   padding:12px;
-  border-radius:12px;
+  border-radius:10px;
+  background:rgba(0,255,247,0.05);
+  border:1px solid rgba(0,255,247,0.3);
+  box-shadow:0 0 10px rgba(0,255,247,0.2);
 }
 
-.user { background:#222; }
-.ai { background:#333; }
+.user {
+  border-color:#ffd700;
+  box-shadow:0 0 10px rgba(255,215,0,0.4);
+}
 
 /* INPUT AREA */
 .input-area {
   padding:10px;
-  border-top:1px solid #222;
+  border-top:1px solid #00fff7;
 }
 
+/* TEXTAREA */
 textarea {
   width:100%;
-  border:none;
+  background:#000;
+  color:#00fff7;
+  border:1px solid #00fff7;
   border-radius:10px;
-  background:#111;
-  color:white;
-  padding:10px;
+  padding:12px;
+  box-shadow:0 0 10px #00fff7 inset;
+  font-size:14px;
 }
 
-/* ACTION BAR */
+/* ACTION BUTTONS */
 .actions {
   display:flex;
-  justify-content:space-around;
+  gap:5px;
   margin-top:10px;
 }
 
 .actions button {
   flex:1;
-  margin:3px;
   padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:white;
+  background:black;
+  color:#00fff7;
+  border:1px solid #00fff7;
+  border-radius:8px;
+  box-shadow:0 0 10px rgba(0,255,247,0.3);
 }
 
-/* SEND */
+/* SEND BUTTON */
 .send-btn {
   width:100%;
   margin-top:10px;
-  padding:12px;
-  background:gold;
+  padding:14px;
+  background:linear-gradient(90deg,#ffd700,#00fff7);
   border:none;
   border-radius:10px;
   font-weight:bold;
+  color:black;
+}
+
+/* SCAN LINE */
+body::before {
+  content:"";
+  position:fixed;
+  width:100%;
+  height:2px;
+  background:#00fff7;
+  top:0;
+  animation:scan 4s linear infinite;
+}
+
+@keyframes scan {
+  0% { top:0 }
+  100% { top:100% }
 }
 </style>
 </head>
@@ -102,7 +132,7 @@ textarea {
 
   <input type="file" id="fileInput" style="display:none">
 
-  <button class="send-btn" onclick="send()">Execute</button>
+  <button class="send-btn" onclick="send()">EXECUTE</button>
 
 </div>
 
@@ -110,9 +140,11 @@ textarea {
 let token = "";
 let mode = "chat";
 
-/* SEND CORE */
+/* SEND MESSAGE */
 async function send(){
-  const text = input.value;
+  const text = document.getElementById("input").value;
+
+  if(!text) return;
 
   chat.innerHTML += `<div class="msg user">${text}</div>`;
 
@@ -133,9 +165,26 @@ async function send(){
 
   const data = await res.json();
 
-  chat.innerHTML += `<div class="msg ai">${data.reply}</div>`;
+  typeEffect(data.reply);
 
-  input.value="";
+  document.getElementById("input").value="";
+}
+
+/* TYPING EFFECT */
+function typeEffect(text){
+  let i = 0;
+  let output = "";
+
+  const box = document.createElement("div");
+  box.className = "msg ai";
+  document.getElementById("chat").appendChild(box);
+
+  const interval = setInterval(()=>{
+    output += text[i];
+    box.innerHTML = output;
+    i++;
+    if(i >= text.length) clearInterval(interval);
+  }, 10);
 }
 
 /* FILE UPLOAD */
@@ -157,7 +206,7 @@ document.getElementById("fileInput").addEventListener("change", async function()
 
   const data = await res.json();
 
-  chat.innerHTML += `<div class="msg ai">${data.analysis}</div>`;
+  typeEffect(data.analysis);
 });
 
 /* VAULT */
@@ -165,7 +214,7 @@ async function loadVault(){
   const res = await fetch("/vault",{headers:{Authorization:token}});
   const data = await res.json();
 
-  chat.innerHTML += `<div class="msg ai">${JSON.stringify(data)}</div>`;
+  typeEffect(JSON.stringify(data, null, 2));
 }
 </script>
 
