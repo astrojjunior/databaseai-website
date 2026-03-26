@@ -11,13 +11,10 @@ body {
   font-family:'Orbitron', sans-serif;
   overflow:hidden;
   color:#ffd700;
-
-  background:
-    radial-gradient(circle at center, rgba(255,215,0,0.15), transparent 60%),
-    #000;
+  background:#000;
 }
 
-/* 🌌 BACKGROUND GRID */
+/* GRID */
 .grid {
   position:fixed;
   width:100%;
@@ -26,37 +23,6 @@ body {
     linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
   background-size:50px 50px;
-  animation:moveGrid 10s linear infinite;
-}
-
-@keyframes moveGrid {
-  0% { transform:translateY(0); }
-  100% { transform:translateY(50px); }
-}
-
-/* 🔥 AI CORE */
-.core {
-  position:absolute;
-  top:40%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:150px;
-  height:150px;
-  border-radius:50%;
-
-  background:radial-gradient(circle, #ffd700, #000);
-  box-shadow:
-    0 0 30px #ffd700,
-    0 0 60px #ffd700,
-    inset 0 0 30px #000;
-
-  animation:pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform:translate(-50%,-50%) scale(1); }
-  50% { transform:translate(-50%,-50%) scale(1.1); }
-  100% { transform:translate(-50%,-50%) scale(1); }
 }
 
 /* HEADER */
@@ -69,24 +35,99 @@ body {
   text-shadow:0 0 15px #ffd700;
 }
 
+/* AI CORE */
+.core {
+  position:absolute;
+  top:35%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:radial-gradient(circle,#ffd700,#000);
+  box-shadow:0 0 40px #ffd700,0 0 80px #ffd700;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform:translate(-50%,-50%) scale(1); }
+  50% { transform:translate(-50%,-50%) scale(1.1); }
+  100% { transform:translate(-50%,-50%) scale(1); }
+}
+
+/* PANELS */
+.panels {
+  position:absolute;
+  top:55%;
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:10px;
+}
+
+.panel {
+  padding:20px;
+  text-align:center;
+  border:1px solid #ffd700;
+  border-radius:12px;
+  background:rgba(255,215,0,0.05);
+  box-shadow:0 0 15px rgba(255,215,0,0.4);
+}
+
+/* MODE SCREEN */
+.mode-screen {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:#000;
+  transform:translateY(100%);
+  transition:0.4s;
+  z-index:100;
+}
+
+.mode-screen.active {
+  transform:translateY(0);
+}
+
+.mode-header {
+  display:flex;
+  justify-content:space-between;
+  padding:15px;
+  border-bottom:1px solid #ffd700;
+}
+
+.mode-content {
+  padding:15px;
+  overflow-y:auto;
+  height:calc(100% - 60px);
+}
+
+.mode-card {
+  padding:15px;
+  margin-bottom:10px;
+  border:1px solid #ffd700;
+  border-radius:10px;
+  background:rgba(255,215,0,0.05);
+}
+
 /* CHAT */
 .chat {
   position:absolute;
-  top:60%;
+  bottom:140px;
   width:100%;
-  height:30%;
+  max-height:150px;
   overflow-y:auto;
   padding:10px;
 }
 
-/* MESSAGES */
 .msg {
-  margin:8px 0;
-  padding:12px;
-  border-radius:10px;
-  background:rgba(255,215,0,0.05);
+  margin:5px 0;
+  padding:10px;
   border:1px solid #ffd700;
-  box-shadow:0 0 10px rgba(255,215,0,0.4);
+  border-radius:10px;
 }
 
 /* INPUT */
@@ -106,22 +147,6 @@ textarea {
   color:#ffd700;
 }
 
-/* BUTTONS */
-.actions {
-  display:flex;
-  margin-top:5px;
-}
-
-.actions button {
-  flex:1;
-  margin:2px;
-  padding:10px;
-  background:black;
-  border:1px solid #ffd700;
-  color:#ffd700;
-}
-
-/* SEND */
 .send-btn {
   width:100%;
   margin-top:5px;
@@ -141,71 +166,151 @@ textarea {
 
 <div class="core"></div>
 
+<!-- PANELS -->
+<div class="panels">
+  <div class="panel" onclick="openMode('business')">💼 Business</div>
+  <div class="panel" onclick="openMode('mind')">🧠 Mind</div>
+  <div class="panel" onclick="openMode('analysis')">📊 Analysis</div>
+  <div class="panel" onclick="openMode('vault')">🧾 Vault</div>
+</div>
+
+<!-- MODE SCREEN -->
+<div id="modeScreen" class="mode-screen">
+  <div class="mode-header">
+    <span id="modeTitle"></span>
+    <button onclick="closeMode()">✕</button>
+  </div>
+  <div id="modeContent" class="mode-content"></div>
+</div>
+
+<!-- CHAT -->
 <div id="chat" class="chat"></div>
 
+<!-- INPUT -->
 <div class="input-area">
-
   <textarea id="input" placeholder="Command the system..."></textarea>
-
-  <div class="actions">
-    <button onclick="mode='chat'">Chat</button>
-    <button onclick="mode='analyze'">Analyze</button>
-    <button onclick="upload()">Upload</button>
-    <button onclick="vault()">Vault</button>
-  </div>
-
   <button class="send-btn" onclick="send()">EXECUTE</button>
-
 </div>
 
 <script>
-let mode="chat";
+let mode = "chat";
 
-/* SEND */
-async function send(){
-  const text=input.value;
-  chat.innerHTML+=`<div class="msg">${text}</div>`;
+/* OPEN MODE */
+function openMode(type){
+  const screen = document.getElementById("modeScreen");
+  const title = document.getElementById("modeTitle");
+  const content = document.getElementById("modeContent");
 
-  let final=text;
-  if(mode==="analyze"){
-    final="Analyze deeply:\n\n"+text;
+  screen.classList.add("active");
+
+  if(type === "business"){
+    mode = "business";
+    title.innerText = "Business Intelligence";
+    content.innerHTML = `
+      <div class="mode-card">Startup Strategy</div>
+      <div class="mode-card">Growth Plan</div>
+      <div class="mode-card">Money Systems</div>
+    `;
   }
 
-  const res=await fetch("/api/chat",{
+  if(type === "mind"){
+    mode = "mind";
+    title.innerText = "Mind & Therapy";
+    content.innerHTML = `
+      <div class="mode-card">Talk freely</div>
+      <div class="mode-card">Emotional clarity</div>
+      <div class="mode-card">Guidance</div>
+    `;
+  }
+
+  if(type === "analysis"){
+    mode = "analysis";
+    title.innerText = "Analysis Lab";
+    content.innerHTML = `
+      <textarea id="analyzeInput" placeholder="Paste anything..."></textarea>
+      <button class="send-btn" onclick="analyzeNow()">Analyze</button>
+      <div id="analysisResult"></div>
+    `;
+  }
+
+  if(type === "vault"){
+    mode = "vault";
+    title.innerText = "Memory Vault";
+    content.innerHTML = `<div>Loading vault...</div>`;
+    loadVault();
+  }
+}
+
+/* CLOSE */
+function closeMode(){
+  document.getElementById("modeScreen").classList.remove("active");
+}
+
+/* SEND CHAT */
+async function send(){
+  const text = input.value;
+
+  chat.innerHTML += `<div class="msg">${text}</div>`;
+
+  let final = text;
+
+  if(mode === "business"){
+    final = "Business expert mode:\n" + text;
+  }
+
+  if(mode === "mind"){
+    final = "Act like a therapist:\n" + text;
+  }
+
+  const res = await fetch("/api/chat",{
     method:"POST",
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({message:final})
   });
 
-  const data=await res.json();
+  const data = await res.json();
 
-  type(data.reply);
+  typeEffect(data.reply);
   input.value="";
 }
 
 /* TYPE EFFECT */
-function type(t){
-  let i=0;
-  let out="";
+function typeEffect(text){
+  let i=0, out="";
   const box=document.createElement("div");
   box.className="msg";
   chat.appendChild(box);
 
   const inter=setInterval(()=>{
-    out+=t[i];
+    out+=text[i];
     box.innerHTML=out;
     i++;
-    if(i>=t.length) clearInterval(inter);
+    if(i>=text.length) clearInterval(inter);
   },10);
 }
 
-/* MOCK */
-function upload(){
-  type("Upload system ready.");
+/* ANALYSIS */
+async function analyzeNow(){
+  const text = document.getElementById("analyzeInput").value;
+
+  const res = await fetch("/api/chat",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:"Analyze deeply:\n"+text})
+  });
+
+  const data = await res.json();
+
+  document.getElementById("analysisResult").innerHTML = data.reply;
 }
 
-function vault(){
-  type("Vault accessed.");
+/* VAULT */
+async function loadVault(){
+  const res = await fetch("/vault");
+  const data = await res.json();
+
+  document.getElementById("modeContent").innerHTML =
+    data.map(v=>`<div class="mode-card">${v.content}</div>`).join("");
 }
 </script>
 
