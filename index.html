@@ -1,207 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>DatabaseAI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DatabaseAI</title>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0a0a0a;
-  color: #eaeaea;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0a0a0a;
+      color: #eaeaea;
+    }
 
-.container {
-  padding: 30px;
-}
+    .container {
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
 
-h1 {
-  font-size: 42px;
-  background: linear-gradient(90deg, gold, #ffffff);
-  -webkit-background-clip: text;
-  color: transparent;
-}
+    h1 {
+      font-size: 42px;
+      background: linear-gradient(90deg, gold, #fff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
 
-.subtitle {
-  color: #aaa;
-  margin-top: 10px;
-  line-height: 1.6;
-}
+    input {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid #222;
+      background: #111;
+      color: #fff;
+    }
 
-.button {
-  margin-top: 20px;
-  padding: 15px 25px;
-  border-radius: 30px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  background: linear-gradient(90deg, gold, #222);
-  color: black;
-}
+    .button {
+      margin-top: 15px;
+      padding: 15px;
+      width: 100%;
+      border-radius: 30px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(90deg, gold, #333);
+      color: black;
+    }
 
-.section {
-  margin-top: 50px;
-}
+    .chat-box {
+      margin-top: 20px;
+    }
 
-.card {
-  background: #111;
-  padding: 20px;
-  border-radius: 20px;
-  margin-top: 15px;
-  border: 1px solid #222;
-}
+    .msg {
+      background: #111;
+      padding: 15px;
+      border-radius: 15px;
+      margin-top: 10px;
+    }
 
-.title {
-  color: gold;
-  font-size: 18px;
-  margin-bottom: 8px;
-}
-
-#chat {
-  display: flex;
-  flex-direction: column;
-}
-</style>
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>DatabaseAI</h1>
+  <h1>DatabaseAI</h1>
 
-<p class="subtitle">
-One interface. All intelligence.<br>
-Search. Analyze. Command. Store.<br>
-No switching. No limits.
-</p>
+  <!-- AUTH -->
+  <div id="auth">
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
 
-<button class="button" onclick="openAI()">Enter Command Layer</button>
+    <button class="button" onclick="signup()">Sign Up</button>
+    <button class="button" onclick="login()">Login</button>
+  </div>
 
-<!-- AI CHAT -->
-<div id="aiBox" style="display:none; margin-top:30px;">
+  <!-- APP -->
+  <div id="app" class="hidden">
 
-  <div id="chat" style="max-height:400px; overflow-y:auto;"></div>
+    <button class="button" onclick="logout()">Logout</button>
 
-  <textarea id="input" placeholder="Enter command..."
-  style="width:100%; padding:15px; border-radius:10px; background:#111; color:white; border:1px solid #333; margin-top:10px;"></textarea>
+    <div class="chat-box" id="chat"></div>
 
-  <button onclick="send()" class="button">Execute</button>
+    <input id="message" placeholder="Enter command..." />
+    <button class="button" onclick="askAI()">Execute</button>
 
-  <button onclick="upgrade()" class="button">Unlock Premium</button>
-
-</div>
-
-<!-- FEATURES -->
-<div class="section">
-
-<div class="card">
-  <div class="title">AI Base</div>
-  <p>Direct command layer for AI interaction.</p>
-</div>
-
-<div class="card">
-  <div class="title">Discover</div>
-  <p>Universal search across web and intelligence.</p>
-</div>
-
-<div class="card">
-  <div class="title">Decode</div>
-  <p>Paste anything. Extract intelligence instantly.</p>
-</div>
-
-<div class="card">
-  <div class="title">Vault</div>
-  <p>Store, analyze, download and control data.</p>
-</div>
-
-<div class="card">
-  <div class="title">Avatar</div>
-  <p>Your identity system across intelligence.</p>
-</div>
-
-<div class="card">
-  <div class="title">Premium Barrier</div>
-  <p>Unlock elite speed and intelligence.</p>
-</div>
+    <button class="button" onclick="premium()">Unlock Premium</button>
+  </div>
 
 </div>
 
-</div>
-
-<!-- SCRIPT -->
 <script>
+const API = "https://database-backend-rnw0.onrender.com";
 
-let messageCount = 0;
-const LIMIT = 5;
+let token = localStorage.getItem("token");
 
-function openAI() {
-  document.getElementById("aiBox").style.display = "block";
+/* AUTO LOGIN */
+if (token) {
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
 }
 
-function addMessage(text, type) {
+/* SIGNUP */
+async function signup() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(API + "/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+  alert(data.message);
+}
+
+/* LOGIN */
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(API + "/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    location.reload();
+  } else {
+    alert(data.message);
+  }
+}
+
+/* LOGOUT */
+function logout() {
+  localStorage.removeItem("token");
+  location.reload();
+}
+
+/* ASK AI */
+async function askAI() {
+  const message = document.getElementById("message").value;
   const chat = document.getElementById("chat");
 
-  const bubble = document.createElement("div");
-  bubble.style.padding = "10px";
-  bubble.style.marginTop = "10px";
-  bubble.style.borderRadius = "10px";
-  bubble.style.maxWidth = "80%";
+  const userMsg = document.createElement("div");
+  userMsg.className = "msg";
+  userMsg.innerText = "You: " + message;
+  chat.appendChild(userMsg);
 
-  if (type === "user") {
-    bubble.style.background = "#222";
-    bubble.style.alignSelf = "flex-end";
-  } else {
-    bubble.style.background = "#111";
-    bubble.style.border = "1px solid #333";
-  }
+  const res = await fetch(API + "/ask", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": token
+    },
+    body: JSON.stringify({ message })
+  });
 
-  bubble.innerText = text;
-  chat.appendChild(bubble);
+  const data = await res.json();
 
-  chat.scrollTop = chat.scrollHeight;
+  const aiMsg = document.createElement("div");
+  aiMsg.className = "msg";
+  aiMsg.innerText = data.reply;
+  chat.appendChild(aiMsg);
 }
 
-async function send() {
-  const input = document.getElementById("input");
-  const text = input.value;
-
-  if (!text) return;
-
-  if (messageCount >= LIMIT) {
-    alert("Free limit reached. Upgrade to Premium.");
-    return;
-  }
-
-  addMessage(text, "user");
-  input.value = "";
-
-  messageCount++;
-
-  try {
-    const res = await fetch("https://database-backend-rnw0.onrender.com/ask", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message: text })
-    });
-
-    const data = await res.json();
-
-    addMessage(data.reply || "No response", "ai");
-
-  } catch (err) {
-    addMessage("Server error. Try again.", "ai");
-  }
-}
-
-function upgrade() {
+/* PREMIUM */
+function premium() {
   alert("Premium system coming next.");
 }
-
 </script>
 
 </body>
-    </html>
+</html>
