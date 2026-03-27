@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DatabaseAI</title>
+<title>DatabaseAI God Mode</title>
 
 <style>
 body{
@@ -13,13 +13,13 @@ body{
   color:#ffd700;
 }
 
-/* GRID BACKGROUND */
+/* GRID */
 body::after{
   content:"";
   position:fixed;
   width:100%;
   height:100%;
-  background-image:
+  background:
     linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
   background-size:40px 40px;
@@ -33,12 +33,12 @@ body::after{
   margin:20px auto;
   border-radius:50%;
   background:radial-gradient(circle,#ffd700,#000);
-  box-shadow:0 0 80px #ffd700;
-  transition:0.3s;
+  box-shadow:0 0 100px #ffd700;
+  transition:0.4s;
 }
 
 .core.active{
-  box-shadow:0 0 150px #ffd700;
+  box-shadow:0 0 200px #ffd700;
   transform:scale(1.1);
 }
 
@@ -53,38 +53,28 @@ body::after{
 .system-card{
   padding:20px;
   border-radius:20px;
-  border:1px solid rgba(255,215,0,0.4);
+  border:1px solid rgba(255,215,0,0.5);
   background:#111;
 }
-
-.system-card h3{ margin:0; }
 
 /* COMMAND */
 .command-bar{
   position:fixed;
   bottom:0;
   width:100%;
-  padding:10px;
-  background:#000;
   display:flex;
   gap:10px;
+  padding:10px;
+  background:#000;
 }
 
 .command-input{
   flex:1;
   padding:15px;
-  background:#111;
+  border-radius:10px;
   border:none;
-  border-radius:10px;
+  background:#111;
   color:#fff;
-}
-
-.mic-btn{
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ffd700;
-  background:#000;
-  color:#ffd700;
 }
 
 /* MODE */
@@ -117,7 +107,7 @@ body::after{
 
 .back-btn{
   border:1px solid #ffd700;
-  padding:5px 10px;
+  padding:6px 12px;
   border-radius:10px;
 }
 
@@ -128,8 +118,8 @@ body::after{
 }
 
 .msg{
-  margin:5px 0;
   padding:10px;
+  margin:5px 0;
   border-radius:10px;
 }
 
@@ -141,31 +131,38 @@ body::after{
 
 <body>
 
-<div style="text-align:center;padding:10px;">DATABASE AI</div>
+<div style="text-align:center;padding:10px;">DATABASE AI — GOD MODE</div>
 <div class="core"></div>
 
 <div class="system-grid">
   <div class="system-card" onclick="openMode()">BUSINESS</div>
   <div class="system-card" onclick="openMode()">MIND</div>
   <div class="system-card" onclick="openMode()">ANALYSIS</div>
-  <div class="system-card" onclick="openMode()">VAULT</div>
+  <div class="system-card" onclick="openMode()">CREATE</div>
 </div>
 
 <div class="command-bar">
-  <input id="quickInput" class="command-input" placeholder="Command...">
-  <button class="mic-btn" onclick="startVoice()">🎤</button>
+  <input id="quickInput" class="command-input" placeholder="Command the system...">
 </div>
 
 <div id="modeScreen" class="mode-screen">
   <div class="mode-header">
     <div class="back-btn" onclick="closeMode()">RETURN</div>
-    <div>AI</div>
+    <div>AI CORE</div>
   </div>
 
   <div id="chat" class="mode-content"></div>
 </div>
 
 <script>
+
+/* MEMORY BRAIN */
+let brain = JSON.parse(localStorage.getItem("brain")||"{}");
+
+/* SAVE BRAIN */
+function saveBrain(){
+  localStorage.setItem("brain", JSON.stringify(brain));
+}
 
 /* OPEN */
 function openMode(){
@@ -175,28 +172,45 @@ function openMode(){
 /* CLOSE */
 function closeMode(){
   document.getElementById("modeScreen").classList.remove("active");
+
   const core=document.querySelector(".core");
   core.classList.add("active");
-  setTimeout(()=>core.classList.remove("active"),500);
+  setTimeout(()=>core.classList.remove("active"),600);
 }
 
 /* SEND */
 async function send(msg){
-  const chat=document.getElementById("chat");
 
+  const chat=document.getElementById("chat");
   chat.innerHTML+=`<div class="msg user">${msg}</div>`;
+
+  /* CONTEXT BUILD */
+  let context = brain.lastTopic || "";
 
   const res=await fetch("/api/chat",{
     method:"POST",
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({message:msg})
+    body:JSON.stringify({
+      message: `
+User context: ${context}
+
+User says: ${msg}
+
+Respond like a high-level strategic AI.
+Be intelligent, refined, and aware.
+`
+    })
   });
 
   const data=await res.json();
 
   typeEffect(data.reply, chat);
-
   speak(data.reply);
+
+  /* UPDATE BRAIN */
+  brain.lastTopic = msg;
+  brain.lastResponse = data.reply;
+  saveBrain();
 }
 
 /* TYPE EFFECT */
@@ -213,30 +227,15 @@ function typeEffect(text, el){
   },10);
 }
 
-/* VOICE INPUT */
-function startVoice(){
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-
-  recognition.onresult = function(event){
-    const text=event.results[0][0].transcript;
-    openMode();
-    send(text);
-  };
-
-  recognition.start();
-}
-
-/* VOICE OUTPUT */
+/* VOICE */
 function speak(text){
   const speech=new SpeechSynthesisUtterance(text);
-  speech.rate=0.9;
-  speech.pitch=1;
   speech.lang="en-GB";
+  speech.rate=0.9;
   speechSynthesis.speak(speech);
 }
 
-/* ENTER KEY */
+/* COMMAND INPUT */
 document.getElementById("quickInput").addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     openMode();
@@ -244,6 +243,13 @@ document.getElementById("quickInput").addEventListener("keydown",e=>{
     e.target.value="";
   }
 });
+
+/* SMART SUGGESTION SYSTEM */
+setTimeout(()=>{
+  if(!brain.lastTopic){
+    send("Guide me to build something powerful.");
+  }
+},2000);
 
 </script>
 
