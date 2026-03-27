@@ -9,7 +9,6 @@ body{
   font-family:system-ui;
   background:#000;
   color:#ffd700;
-  overflow:hidden;
 }
 
 /* GRID BACKGROUND */
@@ -22,53 +21,31 @@ body::before{
     linear-gradient(rgba(255,215,0,0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,215,0,0.04) 1px, transparent 1px);
   background-size:28px 28px;
-  z-index:-1;
 }
 
 /* HEADER */
 .header{
   text-align:center;
-  padding:10px;
-  font-size:14px;
-  letter-spacing:3px;
+  padding:12px;
+  font-size:16px;
+  letter-spacing:4px;
 }
 
-/* SESSION TABS */
-#sessions{
-  display:flex;
-  overflow-x:auto;
-  gap:8px;
-  padding:6px 10px;
-  border-bottom:1px solid rgba(255,215,0,0.2);
-}
-
-.session-tab{
-  padding:6px 10px;
-  border:1px solid rgba(255,215,0,0.3);
-  border-radius:10px;
+/* STATUS */
+.status{
+  text-align:center;
   font-size:11px;
-  white-space:nowrap;
-}
-
-.session-tab.active{
-  background:rgba(255,215,0,0.2);
+  opacity:0.6;
 }
 
 /* CORE */
 .core{
-  width:140px;
-  height:140px;
-  margin:10px auto;
+  width:160px;
+  height:160px;
+  margin:15px auto;
   border-radius:50%;
   background:radial-gradient(circle,#ffd700,#000);
-  box-shadow:0 0 80px #ffd700;
-  animation:breathe 4s infinite;
-}
-
-@keyframes breathe{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.05);}
-  100%{transform:scale(1);}
+  box-shadow:0 0 100px #ffd700;
 }
 
 /* GRID */
@@ -107,22 +84,26 @@ body::before{
   font-size:11px;
 }
 
-/* AI BUTTON */
-.ai-button{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:radial-gradient(circle,#ffd700,#000);
-  box-shadow:0 0 20px #ffd700;
+/* SESSIONS */
+.sessions{
   display:flex;
-  align-items:center;
-  justify-content:center;
+  overflow-x:auto;
+  gap:6px;
+  padding:6px;
 }
 
-/* MODE */
+.session{
+  padding:6px 10px;
+  border:1px solid rgba(255,215,0,0.3);
+  border-radius:10px;
+  font-size:10px;
+}
+
+.active-session{
+  background:rgba(255,215,0,0.2);
+}
+
+/* MODE SCREEN */
 .mode{
   position:fixed;
   top:0;
@@ -134,34 +115,30 @@ body::before{
   flex-direction:column;
 }
 
-.mode.active{
-  display:flex;
-}
+.mode.active{display:flex;}
 
-/* TOP */
 .top{
   display:flex;
   justify-content:space-between;
   padding:10px;
-  border-bottom:1px solid rgba(255,215,0,0.2);
 }
 
 .back{
-  border:1px solid rgba(255,215,0,0.4);
-  padding:5px 10px;
+  border:1px solid #ffd700;
+  padding:6px 12px;
   border-radius:10px;
 }
 
-/* EXPLORE */
-.explore{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
+/* BUILDER */
+.builder{
   padding:10px;
+  border-bottom:1px solid rgba(255,215,0,0.2);
 }
 
-.explore .card{
-  text-align:center;
+.builder-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
 }
 
 /* CHAT */
@@ -173,55 +150,27 @@ body::before{
 
 .msg{
   padding:10px;
-  margin:5px 0;
+  margin:6px 0;
   border-radius:10px;
 }
 
 .user{background:#222;}
 .ai{background:#111;}
-
-/* INPUT */
-.input-overlay{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  padding:10px;
-  background:#000;
-  display:none;
-}
-
-.input-overlay input{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:#fff;
-}
-
-/* STATUS */
-.status{
-  position:fixed;
-  bottom:90px;
-  width:100%;
-  text-align:center;
-  font-size:10px;
-  opacity:0.6;
-}
 </style>
 </head>
 
 <body>
 
 <div class="header">DATABASE AI</div>
+<div class="status" id="status">System Ready</div>
 
-<div id="sessions"></div>
+<div class="sessions" id="sessions"></div>
 
 <div class="core"></div>
 
 <div class="grid">
 
-<div class="card" onclick="openMode('BUSINESS')">
+<div class="card" onclick="openMode('BUSINESS ENGINE')">
 <div class="card-title">BUSINESS ENGINE</div>
 <div class="subgrid">
 <div class="small">Startup</div>
@@ -231,7 +180,7 @@ body::before{
 </div>
 </div>
 
-<div class="card" onclick="openMode('MIND')">
+<div class="card" onclick="openMode('MIND SYSTEM')">
 <div class="card-title">MIND SYSTEM</div>
 <div class="subgrid">
 <div class="small">Focus</div>
@@ -241,7 +190,7 @@ body::before{
 </div>
 </div>
 
-<div class="card" onclick="openMode('ANALYSIS')">
+<div class="card" onclick="openMode('ANALYSIS CORE')">
 <div class="card-title">ANALYSIS CORE</div>
 <div class="subgrid">
 <div class="small">Breakdown</div>
@@ -261,31 +210,9 @@ body::before{
 </div>
 </div>
 
-<div class="card" onclick="openMode('CREATE')">
-<div class="card-title">CREATE ENGINE</div>
-<div class="subgrid">
-<div class="small">App</div>
-<div class="small">Website</div>
-<div class="small">Automation</div>
-<div class="small">Systems</div>
-</div>
 </div>
 
-<div class="card" onclick="openMode('KNOWLEDGE')">
-<div class="card-title">KNOWLEDGE CORE</div>
-<div class="subgrid">
-<div class="small">Books</div>
-<div class="small">History</div>
-<div class="small">People</div>
-<div class="small">World</div>
-</div>
-</div>
-
-</div>
-
-<div class="ai-button" onclick="toggleInput()">AI</div>
-<div class="status" id="status">System ready</div>
-
+<!-- MODE SCREEN -->
 <div id="mode" class="mode">
 
 <div class="top">
@@ -293,33 +220,122 @@ body::before{
 <div id="title">SYSTEM</div>
 </div>
 
-<div id="explore" class="explore"></div>
+<div class="builder">
+<div>Build System</div>
+<div class="builder-grid">
+<div class="small" onclick="build('business')">Business</div>
+<div class="small" onclick="build('app')">App</div>
+<div class="small" onclick="build('website')">Website</div>
+<div class="small" onclick="build('money')">Money</div>
+</div>
+</div>
+
 <div id="chat" class="chat"></div>
 
 </div>
 
-<div id="inputBox" class="input-overlay">
-<input id="input" placeholder="Command...">
-</div>
-
 <script>
 
-/* SESSION SYSTEM */
+/* =====================
+   SESSIONS
+===================== */
 let sessions = JSON.parse(localStorage.getItem("sessions")||"[]");
 let currentSession = null;
 
-function saveSessions(){
-  localStorage.setItem("sessions", JSON.stringify(sessions));
+function save(){
+  localStorage.setItem("sessions",JSON.stringify(sessions));
 }
 
-function createSession(title){
-  const s = {id:Date.now(), title, messages:[]};
+function createSession(name){
+  const s = {
+    id:Date.now(),
+    name,
+    messages:[]
+  };
   sessions.push(s);
   currentSession = s;
-  saveSessions();
+  save();
   renderSessions();
 }
 
 function renderSessions(){
-  const el = document.getElementById("sessions");
-  el.inner
+  const el=document.getElementById("sessions");
+  el.innerHTML=sessions.map(s=>
+    `<div class="session ${currentSession&&s.id===currentSession.id?'active-session':''}"
+    onclick="switchSession(${s.id})">${s.name}</div>`
+  ).join("");
+}
+
+function switchSession(id){
+  currentSession=sessions.find(s=>s.id===id);
+  const chat=document.getElementById("chat");
+  chat.innerHTML=currentSession.messages.map(m=>
+    `<div class="msg ${m.type}">${m.text}</div>`
+  ).join("");
+  renderSessions();
+}
+
+/* =====================
+   MODE
+===================== */
+function openMode(type){
+  document.getElementById("mode").classList.add("active");
+  document.getElementById("title").innerText = type;
+}
+
+function closeMode(){
+  document.getElementById("mode").classList.remove("active");
+}
+
+/* =====================
+   SEND AI
+===================== */
+async function send(msg){
+
+  if(!currentSession){
+    createSession(msg.slice(0,10));
+  }
+
+  const chat=document.getElementById("chat");
+
+  chat.innerHTML+=`<div class="msg user">${msg}</div>`;
+
+  currentSession.messages.push({type:"user",text:msg});
+  save();
+
+  document.getElementById("status").innerText="Building...";
+
+  const res = await fetch("https://database-backend-rnw0.onrender.com/api/chat", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      message:msg
+    })
+  });
+
+  const data = await res.json();
+
+  chat.innerHTML+=`<div class="msg ai">${data.reply}</div>`;
+
+  currentSession.messages.push({type:"ai",text:data.reply});
+  save();
+
+  document.getElementById("status").innerText="Ready";
+}
+
+/* =====================
+   BUILDER
+===================== */
+function build(type){
+  send("Build "+type+" with full strategy and steps");
+}
+
+/* INIT */
+renderSessions();
+
+</script>
+
+</body>
+</html>
