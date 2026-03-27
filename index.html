@@ -28,25 +28,47 @@ body::before{
 /* HEADER */
 .header{
   text-align:center;
-  padding:12px;
+  padding:10px;
   font-size:14px;
   letter-spacing:3px;
 }
 
-/* CORE ORB */
+/* SESSION TABS */
+#sessions{
+  display:flex;
+  overflow-x:auto;
+  gap:8px;
+  padding:6px 10px;
+  border-bottom:1px solid rgba(255,215,0,0.2);
+}
+
+.session-tab{
+  padding:6px 10px;
+  border:1px solid rgba(255,215,0,0.3);
+  border-radius:10px;
+  font-size:11px;
+  white-space:nowrap;
+}
+
+.session-tab.active{
+  background:rgba(255,215,0,0.2);
+}
+
+/* CORE */
 .core{
   width:140px;
   height:140px;
-  margin:10px auto 15px;
+  margin:10px auto;
   border-radius:50%;
   background:radial-gradient(circle,#ffd700,#000);
-  box-shadow:0 0 60px #ffd700,0 0 120px rgba(255,215,0,0.3);
-  transition:0.3s;
+  box-shadow:0 0 80px #ffd700;
+  animation:breathe 4s infinite;
 }
 
-.core.active{
-  transform:scale(1.1);
-  box-shadow:0 0 120px #ffd700;
+@keyframes breathe{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+  100%{transform:scale(1);}
 }
 
 /* GRID */
@@ -57,13 +79,11 @@ body::before{
   padding:12px;
 }
 
-/* CARDS */
 .card{
   padding:14px;
   border-radius:18px;
   background:rgba(255,255,255,0.03);
   border:1px solid rgba(255,215,0,0.25);
-  backdrop-filter:blur(8px);
 }
 
 .card-title{
@@ -71,7 +91,7 @@ body::before{
   margin-bottom:10px;
 }
 
-/* SUB OPTIONS */
+/* SUB */
 .subgrid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -87,7 +107,7 @@ body::before{
   font-size:11px;
 }
 
-/* FLOATING AI BUTTON */
+/* AI BUTTON */
 .ai-button{
   position:fixed;
   bottom:20px;
@@ -102,7 +122,7 @@ body::before{
   justify-content:center;
 }
 
-/* MODE SCREEN */
+/* MODE */
 .mode{
   position:fixed;
   top:0;
@@ -122,7 +142,7 @@ body::before{
 .top{
   display:flex;
   justify-content:space-between;
-  padding:12px;
+  padding:10px;
   border-bottom:1px solid rgba(255,215,0,0.2);
 }
 
@@ -142,7 +162,6 @@ body::before{
 
 .explore .card{
   text-align:center;
-  font-size:12px;
 }
 
 /* CHAT */
@@ -158,10 +177,10 @@ body::before{
   border-radius:10px;
 }
 
-.user{ background:#222; }
-.ai{ background:#111; }
+.user{background:#222;}
+.ai{background:#111;}
 
-/* INPUT OVERLAY */
+/* INPUT */
 .input-overlay{
   position:fixed;
   bottom:0;
@@ -180,166 +199,127 @@ body::before{
   color:#fff;
 }
 
+/* STATUS */
+.status{
+  position:fixed;
+  bottom:90px;
+  width:100%;
+  text-align:center;
+  font-size:10px;
+  opacity:0.6;
+}
 </style>
 </head>
 
 <body>
 
 <div class="header">DATABASE AI</div>
+
+<div id="sessions"></div>
+
 <div class="core"></div>
 
 <div class="grid">
 
-  <div class="card" onclick="openMode('BUSINESS')">
-    <div class="card-title">BUSINESS ENGINE</div>
-    <div class="subgrid">
-      <div class="small">Startup</div>
-      <div class="small">Scale</div>
-      <div class="small">Money</div>
-      <div class="small">Strategy</div>
-    </div>
-  </div>
+<div class="card" onclick="openMode('BUSINESS')">
+<div class="card-title">BUSINESS ENGINE</div>
+<div class="subgrid">
+<div class="small">Startup</div>
+<div class="small">Scale</div>
+<div class="small">Money</div>
+<div class="small">Strategy</div>
+</div>
+</div>
 
-  <div class="card" onclick="openMode('MIND')">
-    <div class="card-title">MIND SYSTEM</div>
-    <div class="subgrid">
-      <div class="small">Focus</div>
-      <div class="small">Discipline</div>
-      <div class="small">Clarity</div>
-      <div class="small">Healing</div>
-    </div>
-  </div>
+<div class="card" onclick="openMode('MIND')">
+<div class="card-title">MIND SYSTEM</div>
+<div class="subgrid">
+<div class="small">Focus</div>
+<div class="small">Discipline</div>
+<div class="small">Clarity</div>
+<div class="small">Healing</div>
+</div>
+</div>
 
-  <div class="card" onclick="openMode('ANALYSIS')">
-    <div class="card-title">ANALYSIS CORE</div>
-    <div class="subgrid">
-      <div class="small">Breakdown</div>
-      <div class="small">Patterns</div>
-      <div class="small">Insights</div>
-      <div class="small">Decisions</div>
-    </div>
-  </div>
+<div class="card" onclick="openMode('ANALYSIS')">
+<div class="card-title">ANALYSIS CORE</div>
+<div class="subgrid">
+<div class="small">Breakdown</div>
+<div class="small">Patterns</div>
+<div class="small">Insights</div>
+<div class="small">Decisions</div>
+</div>
+</div>
 
-  <div class="card" onclick="openMode('VAULT')">
-    <div class="card-title">VAULT</div>
-    <div class="subgrid">
-      <div class="small">Ideas</div>
-      <div class="small">Plans</div>
-      <div class="small">Memory</div>
-      <div class="small">Files</div>
-    </div>
-  </div>
+<div class="card" onclick="openMode('VAULT')">
+<div class="card-title">VAULT</div>
+<div class="subgrid">
+<div class="small">Ideas</div>
+<div class="small">Plans</div>
+<div class="small">Memory</div>
+<div class="small">Files</div>
+</div>
+</div>
 
-  <div class="card" onclick="openMode('CREATE')">
-    <div class="card-title">CREATE ENGINE</div>
-    <div class="subgrid">
-      <div class="small">App</div>
-      <div class="small">Website</div>
-      <div class="small">Automation</div>
-      <div class="small">Systems</div>
-    </div>
-  </div>
+<div class="card" onclick="openMode('CREATE')">
+<div class="card-title">CREATE ENGINE</div>
+<div class="subgrid">
+<div class="small">App</div>
+<div class="small">Website</div>
+<div class="small">Automation</div>
+<div class="small">Systems</div>
+</div>
+</div>
 
-  <div class="card" onclick="openMode('KNOWLEDGE')">
-    <div class="card-title">KNOWLEDGE CORE</div>
-    <div class="subgrid">
-      <div class="small">Books</div>
-      <div class="small">History</div>
-      <div class="small">People</div>
-      <div class="small">World</div>
-    </div>
-  </div>
+<div class="card" onclick="openMode('KNOWLEDGE')">
+<div class="card-title">KNOWLEDGE CORE</div>
+<div class="subgrid">
+<div class="small">Books</div>
+<div class="small">History</div>
+<div class="small">People</div>
+<div class="small">World</div>
+</div>
+</div>
 
 </div>
 
 <div class="ai-button" onclick="toggleInput()">AI</div>
+<div class="status" id="status">System ready</div>
 
 <div id="mode" class="mode">
 
-  <div class="top">
-    <div class="back" onclick="closeMode()">BACK</div>
-    <div id="title">SYSTEM</div>
-  </div>
+<div class="top">
+<div class="back" onclick="closeMode()">BACK</div>
+<div id="title">SYSTEM</div>
+</div>
 
-  <div id="explore" class="explore"></div>
-
-  <div id="chat" class="chat"></div>
+<div id="explore" class="explore"></div>
+<div id="chat" class="chat"></div>
 
 </div>
 
 <div id="inputBox" class="input-overlay">
-  <input id="input" placeholder="Speak or type...">
+<input id="input" placeholder="Command...">
 </div>
 
 <script>
 
-let currentMode="GENERAL";
+/* SESSION SYSTEM */
+let sessions = JSON.parse(localStorage.getItem("sessions")||"[]");
+let currentSession = null;
 
-/* OPEN */
-function openMode(type){
-  currentMode=type;
-  document.getElementById("mode").classList.add("active");
-  document.getElementById("title").innerText=type;
-  buildExplore(type);
+function saveSessions(){
+  localStorage.setItem("sessions", JSON.stringify(sessions));
 }
 
-/* CLOSE */
-function closeMode(){
-  document.getElementById("mode").classList.remove("active");
+function createSession(title){
+  const s = {id:Date.now(), title, messages:[]};
+  sessions.push(s);
+  currentSession = s;
+  saveSessions();
+  renderSessions();
 }
 
-/* FLOAT INPUT */
-function toggleInput(){
-  const box=document.getElementById("inputBox");
-  box.style.display = box.style.display==="block" ? "none":"block";
-}
-
-/* EXPLORE */
-function buildExplore(type){
-
-  const explore=document.getElementById("explore");
-
-  const data={
-    BUSINESS:["Startup Plan","Make Money","Scale","Marketing","Pricing","Systems"],
-    MIND:["Focus","Discipline","Confidence","Clarity","Healing","Control"],
-    ANALYSIS:["Break Idea","Deep Think","Patterns","Risk","Decision","Optimize"],
-    VAULT:["Save Idea","View Memory","Organize","Export","Secure","History"],
-    CREATE:["Build App","Website","Automation","AI Tools","Launch","Design"],
-    KNOWLEDGE:["Explain Book","Learn Topic","History","People","World","Deep"]
-  };
-
-  explore.innerHTML=data[type].map(i=>
-    `<div class="card" onclick="send('${i}')">${i}</div>`
-  ).join("");
-}
-
-/* SEND */
-async function send(msg){
-
-  const chat=document.getElementById("chat");
-
-  chat.innerHTML+=`<div class="msg user">${msg}</div>`;
-
-  const res=await fetch("/api/chat",{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({message:msg})
-  });
-
-  const data=await res.json();
-
-  chat.innerHTML+=`<div class="msg ai">${data.reply}</div>`;
-}
-
-/* INPUT */
-document.getElementById("input").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    send(e.target.value);
-    e.target.value="";
-  }
-});
-
-</script>
-
-</body>
-</html>
+function renderSessions(){
+  const el = document.getElementById("sessions");
+  el.inner
