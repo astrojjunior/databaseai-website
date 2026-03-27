@@ -42,7 +42,7 @@ body::before{
   box-shadow:0 0 80px #ffd700;
 }
 
-/* GRID SYSTEM */
+/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -58,16 +58,17 @@ body::before{
   font-size:13px;
 }
 
-/* SUB GRID */
+/* SUB OPTIONS */
 .subgrid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:8px;
+  margin-top:10px;
 }
 
 .small{
-  padding:10px;
-  border-radius:10px;
+  padding:8px;
+  border-radius:8px;
   background:#000;
   border:1px solid rgba(255,215,0,0.2);
   font-size:11px;
@@ -78,9 +79,8 @@ body::before{
   position:fixed;
   bottom:0;
   width:100%;
-  padding:10px;
   display:flex;
-  gap:10px;
+  padding:10px;
   background:#000;
 }
 
@@ -93,7 +93,7 @@ input{
   color:#fff;
 }
 
-/* MODE SCREEN */
+/* MODE */
 .mode{
   position:fixed;
   top:0;
@@ -149,7 +149,7 @@ input{
 
 <div class="grid">
 
-  <div class="card" onclick="openMode()">
+  <div class="card" onclick="openMode('BUSINESS')">
     BUSINESS ENGINE
     <div class="subgrid">
       <div class="small">Startup</div>
@@ -159,7 +159,7 @@ input{
     </div>
   </div>
 
-  <div class="card" onclick="openMode()">
+  <div class="card" onclick="openMode('MIND')">
     MIND SYSTEM
     <div class="subgrid">
       <div class="small">Focus</div>
@@ -169,37 +169,37 @@ input{
     </div>
   </div>
 
-  <div class="card" onclick="openMode()">
+  <div class="card" onclick="openMode('ANALYSIS')">
     ANALYSIS CORE
     <div class="subgrid">
       <div class="small">Breakdown</div>
-      <div class="small">Deep Think</div>
       <div class="small">Patterns</div>
       <div class="small">Insights</div>
+      <div class="small">Decisions</div>
     </div>
   </div>
 
-  <div class="card" onclick="openMode()">
+  <div class="card" onclick="openMode('VAULT')">
     VAULT
     <div class="subgrid">
       <div class="small">Ideas</div>
       <div class="small">Plans</div>
-      <div class="small">Files</div>
       <div class="small">Memory</div>
+      <div class="small">Files</div>
     </div>
   </div>
 
-  <div class="card" onclick="openMode()">
+  <div class="card" onclick="openMode('CREATE')">
     CREATE ENGINE
     <div class="subgrid">
-      <div class="small">Build App</div>
+      <div class="small">App</div>
       <div class="small">Website</div>
-      <div class="small">System</div>
       <div class="small">Automation</div>
+      <div class="small">Systems</div>
     </div>
   </div>
 
-  <div class="card" onclick="openMode()">
+  <div class="card" onclick="openMode('KNOWLEDGE')">
     KNOWLEDGE CORE
     <div class="subgrid">
       <div class="small">Books</div>
@@ -219,8 +219,10 @@ input{
 
   <div class="top">
     <div class="back" onclick="closeMode()">BACK</div>
-    <div>AI CORE</div>
+    <div id="title">SYSTEM</div>
   </div>
+
+  <div id="explore" class="grid"></div>
 
   <div id="chat" class="chat"></div>
 
@@ -228,14 +230,41 @@ input{
 
 <script>
 
+let currentMode = "GENERAL";
+
 /* OPEN */
-function openMode(){
+function openMode(type){
+  currentMode = type;
+  document.getElementById("title").innerText = type;
   document.getElementById("mode").classList.add("active");
+
+  buildExplore(type);
 }
 
 /* CLOSE */
 function closeMode(){
   document.getElementById("mode").classList.remove("active");
+}
+
+/* EXPLORE SYSTEM */
+function buildExplore(type){
+
+  const explore = document.getElementById("explore");
+
+  let data = {
+    BUSINESS:["Startup Plan","Make Money","Scale","Marketing","Pricing","Systems"],
+    MIND:["Focus","Discipline","Confidence","Clarity","Healing","Control"],
+    ANALYSIS:["Break Idea","Deep Think","Patterns","Risk","Decision","Optimize"],
+    VAULT:["Save Idea","View Memory","Organize","Export","Secure","History"],
+    CREATE:["Build App","Create Website","Automation","AI Tools","Launch","System Design"],
+    KNOWLEDGE:["Explain Book","Learn Topic","History","People","World","Deep Knowledge"]
+  };
+
+  let options = data[type] || [];
+
+  explore.innerHTML = options.map(o =>
+    `<div class="card" onclick="send('${o}')">${o}</div>`
+  ).join("");
 }
 
 /* SEND */
@@ -248,18 +277,54 @@ async function send(msg){
   const res=await fetch("/api/chat",{
     method:"POST",
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({message:msg})
+    body:JSON.stringify({
+      message:`
+You are DatabaseAI — elite intelligence system.
+
+Mode: ${currentMode}
+
+User: ${msg}
+
+Respond with:
+- insight
+- clarity
+- strategy
+- action
+`
+    })
   });
 
   const data=await res.json();
 
   chat.innerHTML+=`<div class="msg ai">${data.reply}</div>`;
+
+  suggest();
 }
 
-/* ENTER */
+/* SUGGEST */
+function suggest(){
+
+  const chat=document.getElementById("chat");
+
+  let next = "";
+
+  if(currentMode==="BUSINESS"){
+    next = "Next: refine pricing or customer acquisition?";
+  }
+
+  if(currentMode==="MIND"){
+    next = "Next: build habits or emotional control?";
+  }
+
+  if(next){
+    chat.innerHTML+=`<div class="msg ai">${next}</div>`;
+  }
+}
+
+/* INPUT */
 document.getElementById("input").addEventListener("keydown",e=>{
   if(e.key==="Enter"){
-    openMode();
+    openMode(currentMode);
     send(e.target.value);
     e.target.value="";
   }
