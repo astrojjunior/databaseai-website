@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DatabaseAI God Mode</title>
 
 <style>
 body{
@@ -13,8 +11,8 @@ body{
   color:#ffd700;
 }
 
-/* GRID */
-body::after{
+/* GRID BACKGROUND */
+body::before{
   content:"";
   position:fixed;
   width:100%;
@@ -22,99 +20,114 @@ body::after{
   background:
     linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
-  background-size:40px 40px;
+  background-size:30px 30px;
   z-index:-1;
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+  padding:10px;
+  font-size:14px;
+  letter-spacing:2px;
 }
 
 /* CORE */
 .core{
-  width:150px;
-  height:150px;
-  margin:20px auto;
+  width:120px;
+  height:120px;
+  margin:10px auto;
   border-radius:50%;
   background:radial-gradient(circle,#ffd700,#000);
-  box-shadow:0 0 100px #ffd700;
-  transition:0.4s;
+  box-shadow:0 0 80px #ffd700;
 }
 
-.core.active{
-  box-shadow:0 0 200px #ffd700;
-  transform:scale(1.1);
-}
-
-/* GRID */
-.system-grid{
+/* GRID SYSTEM */
+.grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-  padding:15px;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:10px;
 }
 
-.system-card{
-  padding:20px;
-  border-radius:20px;
-  border:1px solid rgba(255,215,0,0.5);
+.card{
+  padding:15px;
+  border-radius:15px;
   background:#111;
+  border:1px solid rgba(255,215,0,0.3);
+  font-size:13px;
+}
+
+/* SUB GRID */
+.subgrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.small{
+  padding:10px;
+  border-radius:10px;
+  background:#000;
+  border:1px solid rgba(255,215,0,0.2);
+  font-size:11px;
 }
 
 /* COMMAND */
-.command-bar{
+.command{
   position:fixed;
   bottom:0;
   width:100%;
+  padding:10px;
   display:flex;
   gap:10px;
-  padding:10px;
   background:#000;
 }
 
-.command-input{
+input{
   flex:1;
-  padding:15px;
-  border-radius:10px;
+  padding:12px;
   border:none;
+  border-radius:10px;
   background:#111;
   color:#fff;
 }
 
-/* MODE */
-.mode-screen{
+/* MODE SCREEN */
+.mode{
   position:fixed;
   top:0;
   left:0;
   width:100%;
   height:100%;
   background:#000;
-  display:flex;
+  display:none;
   flex-direction:column;
-  opacity:0;
-  transform:scale(1.1);
-  pointer-events:none;
-  transition:0.3s;
 }
 
-.mode-screen.active{
-  opacity:1;
-  transform:scale(1);
-  pointer-events:auto;
+.mode.active{
+  display:flex;
 }
 
-.mode-header{
+/* TOP BAR */
+.top{
   display:flex;
   justify-content:space-between;
-  padding:15px;
+  padding:10px;
+  font-size:12px;
 }
 
-.back-btn{
+.back{
+  padding:5px 10px;
   border:1px solid #ffd700;
-  padding:6px 12px;
-  border-radius:10px;
+  border-radius:8px;
 }
 
-.mode-content{
+/* CHAT */
+.chat{
   flex:1;
   overflow:auto;
-  padding:15px;
+  padding:10px;
 }
 
 .msg{
@@ -131,125 +144,126 @@ body::after{
 
 <body>
 
-<div style="text-align:center;padding:10px;">DATABASE AI — GOD MODE</div>
+<div class="header">DATABASE AI</div>
 <div class="core"></div>
 
-<div class="system-grid">
-  <div class="system-card" onclick="openMode()">BUSINESS</div>
-  <div class="system-card" onclick="openMode()">MIND</div>
-  <div class="system-card" onclick="openMode()">ANALYSIS</div>
-  <div class="system-card" onclick="openMode()">CREATE</div>
+<div class="grid">
+
+  <div class="card" onclick="openMode()">
+    BUSINESS ENGINE
+    <div class="subgrid">
+      <div class="small">Startup</div>
+      <div class="small">Scale</div>
+      <div class="small">Money</div>
+      <div class="small">Strategy</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="openMode()">
+    MIND SYSTEM
+    <div class="subgrid">
+      <div class="small">Focus</div>
+      <div class="small">Discipline</div>
+      <div class="small">Clarity</div>
+      <div class="small">Healing</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="openMode()">
+    ANALYSIS CORE
+    <div class="subgrid">
+      <div class="small">Breakdown</div>
+      <div class="small">Deep Think</div>
+      <div class="small">Patterns</div>
+      <div class="small">Insights</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="openMode()">
+    VAULT
+    <div class="subgrid">
+      <div class="small">Ideas</div>
+      <div class="small">Plans</div>
+      <div class="small">Files</div>
+      <div class="small">Memory</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="openMode()">
+    CREATE ENGINE
+    <div class="subgrid">
+      <div class="small">Build App</div>
+      <div class="small">Website</div>
+      <div class="small">System</div>
+      <div class="small">Automation</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="openMode()">
+    KNOWLEDGE CORE
+    <div class="subgrid">
+      <div class="small">Books</div>
+      <div class="small">History</div>
+      <div class="small">People</div>
+      <div class="small">World</div>
+    </div>
+  </div>
+
 </div>
 
-<div class="command-bar">
-  <input id="quickInput" class="command-input" placeholder="Command the system...">
+<div class="command">
+  <input id="input" placeholder="Command the system...">
 </div>
 
-<div id="modeScreen" class="mode-screen">
-  <div class="mode-header">
-    <div class="back-btn" onclick="closeMode()">RETURN</div>
+<div id="mode" class="mode">
+
+  <div class="top">
+    <div class="back" onclick="closeMode()">BACK</div>
     <div>AI CORE</div>
   </div>
 
-  <div id="chat" class="mode-content"></div>
+  <div id="chat" class="chat"></div>
+
 </div>
 
 <script>
 
-/* MEMORY BRAIN */
-let brain = JSON.parse(localStorage.getItem("brain")||"{}");
-
-/* SAVE BRAIN */
-function saveBrain(){
-  localStorage.setItem("brain", JSON.stringify(brain));
-}
-
 /* OPEN */
 function openMode(){
-  document.getElementById("modeScreen").classList.add("active");
+  document.getElementById("mode").classList.add("active");
 }
 
 /* CLOSE */
 function closeMode(){
-  document.getElementById("modeScreen").classList.remove("active");
-
-  const core=document.querySelector(".core");
-  core.classList.add("active");
-  setTimeout(()=>core.classList.remove("active"),600);
+  document.getElementById("mode").classList.remove("active");
 }
 
 /* SEND */
 async function send(msg){
 
   const chat=document.getElementById("chat");
-  chat.innerHTML+=`<div class="msg user">${msg}</div>`;
 
-  /* CONTEXT BUILD */
-  let context = brain.lastTopic || "";
+  chat.innerHTML+=`<div class="msg user">${msg}</div>`;
 
   const res=await fetch("/api/chat",{
     method:"POST",
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      message: `
-User context: ${context}
-
-User says: ${msg}
-
-Respond like a high-level strategic AI.
-Be intelligent, refined, and aware.
-`
-    })
+    body:JSON.stringify({message:msg})
   });
 
   const data=await res.json();
 
-  typeEffect(data.reply, chat);
-  speak(data.reply);
-
-  /* UPDATE BRAIN */
-  brain.lastTopic = msg;
-  brain.lastResponse = data.reply;
-  saveBrain();
+  chat.innerHTML+=`<div class="msg ai">${data.reply}</div>`;
 }
 
-/* TYPE EFFECT */
-function typeEffect(text, el){
-  let i=0;
-  let div=document.createElement("div");
-  div.className="msg ai";
-  el.appendChild(div);
-
-  let interval=setInterval(()=>{
-    div.innerHTML+=text[i];
-    i++;
-    if(i>=text.length) clearInterval(interval);
-  },10);
-}
-
-/* VOICE */
-function speak(text){
-  const speech=new SpeechSynthesisUtterance(text);
-  speech.lang="en-GB";
-  speech.rate=0.9;
-  speechSynthesis.speak(speech);
-}
-
-/* COMMAND INPUT */
-document.getElementById("quickInput").addEventListener("keydown",e=>{
+/* ENTER */
+document.getElementById("input").addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     openMode();
     send(e.target.value);
     e.target.value="";
   }
 });
-
-/* SMART SUGGESTION SYSTEM */
-setTimeout(()=>{
-  if(!brain.lastTopic){
-    send("Guide me to build something powerful.");
-  }
-},2000);
 
 </script>
 
